@@ -4,7 +4,7 @@ from django.db import models
 
 class Fabric(models.Model):
     type = models.CharField(max_length=50)
-    stock = models.IntegerField()
+    stock = models.IntegerField(default=0)
 
     def __str__(self):
         return self.type
@@ -14,9 +14,10 @@ class Barcode(models.Model):
     fabric_type = models.ForeignKey(
         Fabric,
         on_delete = models.CASCADE,
-        related_name = 'barcode'
+        related_name = 'barcodes'
     )
-    roll_no = models.IntegerField()
+    barcode = models.CharField(max_length=50,blank=True)
+    roll_no = models.IntegerField(unique=True)
     machine_no = models.IntegerField()
     meters = models.IntegerField()
     weight = models.IntegerField()
