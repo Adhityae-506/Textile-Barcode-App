@@ -26,7 +26,6 @@ function BarcodeGenerator() {
         try {
 
           const res = await axios.get("http://127.0.0.1:8000/api/fabrics/");
-          console.log(res.data);
           setFabrics(res.data);
 
         } catch (err) {
@@ -58,7 +57,6 @@ function BarcodeGenerator() {
   const handleGenerate = async() => {
     
     try{
-
         const res = await axios.post("http://127.0.0.1:8000/api/barcode/", {
           fabric_type: fabric,
           machine_no: machine,
@@ -99,7 +97,7 @@ function BarcodeGenerator() {
             </select>
 
           </div>
-          
+
           <div className="flex flex-col gap-2">
               <div className="text-md font-bold">Meters</div>
               <input
