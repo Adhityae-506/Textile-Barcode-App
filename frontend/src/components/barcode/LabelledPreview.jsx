@@ -9,7 +9,7 @@ function LabelledPreview({ barcodeData }) {
 
     return (
         <div
-            className="border p-4 mt-4 bg-white w-[400px]"
+            className="w-5xl border p-4 mt-4 bg-white w-[400px]"
         >
 
             <p>
