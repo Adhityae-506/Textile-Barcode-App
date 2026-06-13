@@ -4,10 +4,12 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from django.db import transaction
 from django.db.models import Max
 
-from .models import Fabric,Barcode, Roll
-from .serializer import FabricSerializer, RollSerializer
+from .models import Fabric,Barcode,Roll, Dispatch
+from .serializer import FabricSerializer, RollSerializer, DispatchSerializer
+from .utils import get_financial_year
 
 from barcode import Code128
 from barcode.writer import ImageWriter
@@ -99,3 +101,74 @@ class RollViewSet(ModelViewSet):
             content_type="image/png"
         )
     
+
+class DispatchViewSet(ModelViewSet):
+    queryset = Dispatch.objects.all()
+    serializer_class = DispatchSerializer
+
+    def perform_create(self,serializer):
+
+        fy = get_financial_year()
+
+        max_seq = Dispatch.objects.filter(
+            financial_year=fy
+        ).aggregate(
+            max_sequence=Max('sequence_no')
+        )['max_sequence']
+
+        next_seq = 1 if max_seq is None else max_seq + 1
+        
+        dispatch_no = f"{fy}{next_seq:04d}"
+
+        serializer.save(
+            financial_year=fy,
+            sequence_no=next_seq,
+            dispatch_no=dispatch_no
+        )
+
+    @action( 
+        detail=True,
+        methods=["post"]
+    )
+
+    def add_roll(self, request, pk=None):
+
+        dispatch = self.get_object()
+
+        barcode_value = request.data.get( "barcode" )
+
+        try:
+            barcode = Barcode.objects.get( barcode = barcode_value )
+
+        except Barcode.DoesNotExist:
+
+            return Response(
+                {"error":"Barcode not found"},
+                status=400
+            )
+        
+        roll = barcode.roll
+
+        if roll.fabric_type_id != dispatch.fabric_type_id:
+
+            return Response({
+                    "error" : "Mismatching Fabric type"
+                },status=400
+            )
+        
+        if roll.dispatch_status == "dispatched":
+
+            return Response({
+                    "error":"Roll already dispatched"
+                },status=400
+            )
+    
+        roll.dispatched = dispatch
+        roll.dispatch_status = "dispatched"
+        roll.save()
+
+        barcode.delete()
+
+        return Response({
+            "message" : "Roll added"
+        })
