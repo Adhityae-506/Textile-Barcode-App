@@ -135,7 +135,6 @@ class DispatchViewSet(ModelViewSet):
 
         barcode_value = request.data.get( "barcode" )
         fabric_type_id = int(request.data.get("fabric_type")) #If frontend send string converts to int
-
         try:
             barcode = Barcode.objects.select_related(
                 "roll",

@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-function DispatchRolls() {
+const DispatchRolls = () => {
 
-    const [dispatchInfo, setDispatchInfo] =
-        useState(null);
+    const [dispatchInfo, setDispatchInfo] = useState(null);
+    const [barcode, setBarcode] = useState("");
+    const [scannedRolls, setScannedRolls] = useState(() => { {/*If 'scannedRolls' already in local storage directly set them*/}
 
-    const [barcode, setBarcode] =
-        useState("");
+    const saved = localStorage.getItem(
+        "dispatch_rolls"
+    );
 
-    const [scannedRolls, setScannedRolls] =
-        useState([]);
+    return saved ? JSON.parse(saved) : [];
 
+});
+
+
+    {/*Set 'dispatchInfo' and 'scannedRoll' from local storage*/}
     useEffect(() => {
 
         const dispatch =
@@ -34,13 +39,14 @@ function DispatchRolls() {
 
     }, []);
 
+
+    {/* At each state render, the local storage 'scannedRoll' is updated */}
     useEffect(() => {
 
         localStorage.setItem(
             "dispatch_rolls",
             JSON.stringify(scannedRolls)
         );
-
     }, [scannedRolls]);
 
     const handleScan = async () => {

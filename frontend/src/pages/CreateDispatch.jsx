@@ -8,30 +8,49 @@ function CreateDispatch() {
     const navigate = useNavigate();
 
     const [fabrics, setFabrics] = useState([]);
-
     const [customerName, setCustomerName] = useState("");
-
     const [vehicleNo, setVehicleNo] = useState("");
-
     const [fabricType, setFabricType] = useState("");
 
+    const [search, setSearch] = useState("");
+    const [selectedFabric, setSelectedFabric] = useState(null);
+    const [showSuggestions, setShowSuggestions] = useState(false)
+
+    const filteredFabrics = fabrics.filter(
+        fabric =>
+            fabric.type
+                .toLowerCase()
+                .includes(search.toLowerCase())
+    );
+
+
+    {/*If Dispatch deatils already in local storage restore*/}
     useEffect(() => {
 
+        const saved = localStorage.getItem("dispatch");
+
+        if (saved) {
+
+            const dispatch = JSON.parse(saved);
+
+            setCustomerName(dispatch.customer_name || "");
+            setVehicleNo(dispatch.vehicle_no || "");
+            setFabricType(dispatch.fabric_type || "");
+
+        }
+
+    }, []);
+
+    useEffect(() => {
+        
         const fetchFabrics = async () => {
-
             try {
-
                 const res = await axios.get("http://127.0.0.1:8000/api/fabrics/");
-
                 setFabrics(res.data);
-
             }
             catch (err) {
-
                 console.error(err);
-
             }
-
         };
 
         fetchFabrics();
@@ -43,7 +62,7 @@ function CreateDispatch() {
         if (
             !customerName ||
             !vehicleNo ||
-            !fabricType
+            !selectedFabric
         ) {
 
             alert("Fill all fields");
@@ -51,12 +70,13 @@ function CreateDispatch() {
             return;
         }
 
+        {/*Write dispatch details to local storage*/}
         localStorage.setItem(
             "dispatch",
             JSON.stringify({
                 customer_name: customerName,
                 vehicle_no: vehicleNo,
-                fabric_type: Number(fabricType)
+                fabric_type: selectedFabric.id
             })
         );
 
@@ -99,34 +119,73 @@ function CreateDispatch() {
                     }
                 />
 
-                <select
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        setShowSuggestions(true);
+                        setSelectedFabric(null);
+                    }}
                     className="border p-2 w-full"
-                    value={fabricType}
-                    onChange={(e) =>
-                        setFabricType(
-                            e.target.value
-                        )
-                    }
-                >
+                    placeholder="Type fabric..."
+                />
 
-                    <option value="">
-                        Select Fabric
-                    </option>
 
-                    {
-                        fabrics.map(fabric => (
+                 {
+                    showSuggestions &&
+                    search &&
+                    filteredFabrics.length > 0 && (
 
-                            <option
-                                key={fabric.id}
-                                value={fabric.id}
-                            >
-                                {fabric.type}
-                            </option>
+                        <div
+                            className="
+                                absolute
+                                bg-white
+                                border
+                                w-full
+                                max-h-48
+                                overflow-y-auto
+                                z-10
+                            "
+                        >
 
-                        ))
-                    }
+                            {
+                                filteredFabrics.map(fabric => (
 
-                </select>
+                                    <div
+                                        key={fabric.id}
+                                        className="
+                                            p-2
+                                            cursor-pointer
+                                            hover:bg-gray-100
+                                        "
+                                        onClick={() => {
+
+                                            setSearch(
+                                                fabric.type
+                                            );
+
+                                            setSelectedFabric(
+                                                fabric
+                                            );
+
+                                            setShowSuggestions(
+                                                false
+                                            );
+
+                                        }}
+                                    >
+                                        {fabric.type}
+                                    </div>
+
+                                ))
+                            }
+
+                        </div>
+
+                    )
+                }
+                            
 
                 <button
                     onClick={handleContinue}
