@@ -10,7 +10,6 @@ function CreateDispatch() {
     const [fabrics, setFabrics] = useState([]);
     const [customerName, setCustomerName] = useState("");
     const [vehicleNo, setVehicleNo] = useState("");
-    const [fabricType, setFabricType] = useState("");
 
     const [search, setSearch] = useState("");
     const [selectedFabric, setSelectedFabric] = useState(null);
@@ -132,7 +131,7 @@ function CreateDispatch() {
                 />
 
 
-                 {
+                {
                     showSuggestions &&
                     search &&
                     filteredFabrics.length > 0 && (
