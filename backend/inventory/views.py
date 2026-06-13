@@ -9,7 +9,7 @@ from django.db.models import Max
 
 from .models import Fabric,Barcode,Roll, Dispatch
 from .serializer import FabricSerializer, RollSerializer, DispatchSerializer
-from .utils import get_financial_year
+from .utils import get_financial_year,create_dispatch
 
 from barcode import Code128
 from barcode.writer import ImageWriter
@@ -127,18 +127,20 @@ class DispatchViewSet(ModelViewSet):
         )
 
     @action( 
-        detail=True,
+        detail=False,
         methods=["post"]
     )
 
-    def add_roll(self, request, pk=None):
-
-        dispatch = self.get_object()
+    def add_roll(self, request):
 
         barcode_value = request.data.get( "barcode" )
+        fabric_type_id = int(request.data.get("fabric_type")) #If frontend send string converts to int
 
         try:
-            barcode = Barcode.objects.get( barcode = barcode_value )
+            barcode = Barcode.objects.select_related(
+                "roll",
+                "roll__fabric_type"
+            ).get(barcode=barcode_value)
 
         except Barcode.DoesNotExist:
 
@@ -149,7 +151,7 @@ class DispatchViewSet(ModelViewSet):
         
         roll = barcode.roll
 
-        if roll.fabric_type_id != dispatch.fabric_type_id:
+        if (roll.fabric_type.id != fabric_type_id):
 
             return Response({
                     "error" : "Mismatching Fabric type"
@@ -162,13 +164,104 @@ class DispatchViewSet(ModelViewSet):
                     "error":"Roll already dispatched"
                 },status=400
             )
-    
-        roll.dispatched = dispatch
-        roll.dispatch_status = "dispatched"
-        roll.save()
-
-        barcode.delete()
-
+        
         return Response({
-            "message" : "Roll added"
+            "id": roll.id,
+            "roll_no": roll.roll_no,
+            "meters": roll.meters,
+            "weight": roll.weight,
+            "barcode": barcode.barcode,
+            "fabric_name": roll.fabric_type.type
         })
+
+    @action(
+        detail=False,
+        methods=["post"]
+    )
+    def finalize(self, request):
+
+        customer_name = request.data.get(
+            "customer_name"
+        )
+
+        vehicle_no = request.data.get(
+            "vehicle_no"
+        )
+
+        fabric_type_id = request.data.get(
+            "fabric_type"
+        )
+
+        barcodes = request.data.get(
+            "barcodes",
+            []
+        )
+
+        if not barcodes:
+
+            return Response(
+                {
+                    "error":
+                    "No rolls selected"
+                },
+                status=400
+            )
+
+        with transaction.atomic():
+
+            # Create Dispatch
+            dispatch = create_dispatch(
+                customer_name,
+                vehicle_no,
+                fabric_type_id
+            )
+
+            for barcode_value in barcodes:
+
+                try:
+
+                    barcode = Barcode.objects.select_related(
+                        "roll",
+                        "roll__fabric_type"
+                    ).get(
+                        barcode=barcode_value
+                    )
+
+                except Barcode.DoesNotExist:
+
+                    raise ValidationError(
+                        f"{barcode_value} not found"
+                    )
+
+                roll = barcode.roll
+
+                # Fabric validation
+                if (
+                    roll.fabric_type_id
+                    != fabric_type_id
+                ):
+
+                    raise ValidationError(
+                        f"{roll.roll_no} fabric mismatch"
+                    )
+
+                # Already dispatched
+                if roll.dispatch_status == "dispatched":
+
+                    raise ValidationError(
+                        f"{roll.roll_no} already dispatched"
+                    )
+
+                roll.dispatch_status = "dispatched"
+                roll.dispatched = dispatch
+
+                roll.save()
+
+                barcode.delete()
+
+            return Response({
+                "message":
+                "Dispatch completed",
+                "dispatch_no":
+                dispatch.dispatch_no
+            })
