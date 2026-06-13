@@ -4,6 +4,8 @@ import Home from "../pages/Home";
 import Barcode from "../pages/Barcode";
 import Fabric from "../pages/Fabric";
 import Login from "../pages/login"
+import CreateDispatch from "../pages/CreateDispatch";
+import DispatchRolls from "../pages/DispatchRolls";
 
 function AppRouter() {
   return (
@@ -13,6 +15,8 @@ function AppRouter() {
         <Route path="/barcode" element={<Barcode />} />
         <Route path="/fabric" element={<Fabric />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/dispatch" element={<CreateDispatch/>} />
+        <Route path="/dispatch/scan" element={<DispatchRolls />} />
       </Routes>
     </BrowserRouter>
   );

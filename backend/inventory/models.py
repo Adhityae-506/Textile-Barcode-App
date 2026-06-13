@@ -14,9 +14,20 @@ class Dispatch(models.Model):
 
     dispatch_no = models.CharField(
         max_length=50, 
-        unique=50
+        unique=True
     )
-
+    fabric_type = models.ForeignKey(
+        Fabric,
+        on_delete=models.PROTECT,
+        related_name="dispatches"
+    )
+    financial_year = models.CharField(
+        max_length=5
+    )
+    sequence_no = models.IntegerField(
+        blank=True,
+        null=True
+    )
     customer_name = models.CharField(max_length = 100)
     vehicle_no = models.CharField(max_length = 30)
     dispatched_at = models.DateTimeField(auto_now_add= True)
@@ -54,7 +65,7 @@ class Roll(models.Model):
                 ('dispatched', 'Dispatched')
             ]
         )
-    dispatched_id = models.ForeignKey(
+    dispatched = models.ForeignKey(
         Dispatch,
         on_delete = models.CASCADE,
         null = True,
