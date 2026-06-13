@@ -1,8 +1,12 @@
-const Home = () => {
+import Navbar from "../components/layout/Navbar";
+// import Sidebar from "../components/layout/Sidebar";
 
-  return(
-    <div>Home</div>
-  )
+function Home() {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Navbar />
+    </div>
+  );
 }
 
-export default Home; 
+export default Home;
