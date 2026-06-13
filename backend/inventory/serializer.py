@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Fabric, Roll
+from .models import Fabric, Roll, Dispatch
 
 class FabricSerializer(serializers.ModelSerializer):
     
@@ -30,10 +30,28 @@ class RollSerializer(serializers.ModelSerializer):
             "meters",
             "weight",
             "roll_no",
-            "barcode"
+            "barcode",
+            "dispatch_status",
         ]
 
         read_only_fields = [
             "roll_no",
             "barcode"
+        ]
+
+class DispatchSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Dispatch
+
+        fields = [
+            "id",
+            "customer_name",
+            "vehicle_no",
+            "dispatched_at",
+            "fabric_type"
+        ]
+
+        read_only_fields = [
+            "dispatch_no"
         ]
