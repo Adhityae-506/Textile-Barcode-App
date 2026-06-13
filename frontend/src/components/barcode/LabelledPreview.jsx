@@ -1,58 +1,107 @@
-import { useState, useEffect } from "react";
+import { forwardRef } from "react";
 
-function LabelledPreview({ barcodeData }) {
+const LabelledPreview = forwardRef(
+  ({ barcodeData }, ref) => {
 
-    if (!barcodeData) {
-        return null;
-    }
+    return (
 
+      <div
+        ref={ref}
+        className="
+          print-area
+          bg-white
+          border
+          rounded-xl
+          min-h-[280px]
+          flex
+          items-center
+          justify-center
+          p-6
+        "
+      >
 
     return (
         <div
             className="w-5xl border p-4 mt-4 bg-white w-[400px]"
         >
 
-            <p>
-                <strong>Roll No :</strong>
-                {" "}
+        ) : (
+
+          <div
+            className="
+              w-[380px]
+              bg-white
+              p-6
+              flex
+              flex-col
+              items-center
+              justify-center
+            "
+          >
+
+            <div className="w-full space-y-2 text-base">
+
+              <p>
+                <strong>
+                  Roll No :
+                </strong>{" "}
                 {barcodeData.roll_no}
-            </p>
+              </p>
 
-            <p>
-                <strong>Fabric :</strong>
-                {" "}
+              <p>
+                <strong>
+                  Fabric :
+                </strong>{" "}
                 {barcodeData.fabric_name}
-            </p>
+              </p>
 
-            <p>
-                <strong>Meters :</strong>
-                {" "}
+              <p>
+                <strong>
+                  Meters :
+                </strong>{" "}
                 {barcodeData.meters}
-            </p>
+              </p>
 
-            <p>
-                <strong>Weight :</strong>
-                {" "}
-                {barcodeData.weight} kg
-            </p>
-
-            <div className="mt-4">
-
-                <img
-                    src={
-                        `http://127.0.0.1:8000/api/barcode/${barcodeData.id}/preview/`
-                    }
-                    alt="barcode"
-                />
+              <p>
+                <strong>
+                  Weight :
+                </strong>{" "}
+                {barcodeData.weight}
+              </p>
 
             </div>
 
-            <p className="mt-2">
-                {barcodeData.barcode}
+            <div className="mt-6 flex justify-center">
+
+              <img
+                src={`http://127.0.0.1:8000/api/barcode/${barcodeData.id}/preview/`}
+                alt="barcode"
+                className="max-w-[320px]"
+              />
+
+            </div>
+
+            <p
+              className="
+                mt-4
+                text-2xl
+                font-bold
+                tracking-wide
+                text-center
+              "
+            >
+              {barcodeData.barcode}
             </p>
 
-        </div>
+          </div>
+
+        )}
+
+      </div>
+
     );
-}
+
+  }
+);
 
 export default LabelledPreview;

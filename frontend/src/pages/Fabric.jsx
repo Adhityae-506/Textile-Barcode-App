@@ -1,4 +1,5 @@
 import CreateFabric from "../components/fabric/CreateFabric";
+import DashboardLayout from "./DashboardLayout";
 
 const Barcode = () => {
   return (
@@ -6,8 +7,10 @@ const Barcode = () => {
       <h1 className="text-3xl font-bold mb-6">
         Create new Fabric Type
       </h1>
-
-      <CreateFabric />
+      <DashboardLayout>
+        <CreateFabric />
+      </DashboardLayout>
+      
     </div>
   );
 }
