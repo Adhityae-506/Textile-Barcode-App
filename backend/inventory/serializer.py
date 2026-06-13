@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Fabric, Barcode
+from .models import Fabric, Roll
 
 class FabricSerializer(serializers.ModelSerializer):
     
@@ -7,15 +7,20 @@ class FabricSerializer(serializers.ModelSerializer):
         model = Fabric
         fields = "__all__"
 
-class BarcodeSerializer(serializers.ModelSerializer):
+class RollSerializer(serializers.ModelSerializer):
 
     fabric_name = serializers.CharField(
         source='fabric_type.type',
         read_only=True
     )
+
+    barcode = serializers.CharField(
+        source='barcode.barcode',
+        read_only=True
+    )
     
     class Meta:
-        model = Barcode
+        model = Roll
 
         fields = [
             "id",
@@ -24,11 +29,11 @@ class BarcodeSerializer(serializers.ModelSerializer):
             "machine_no",
             "meters",
             "weight",
-            "barcode",
-            "roll_no"
+            "roll_no",
+            "barcode"
         ]
 
         read_only_fields = [
-            "barcode",
-            "roll_no"
+            "roll_no",
+            "barcode"
         ]
