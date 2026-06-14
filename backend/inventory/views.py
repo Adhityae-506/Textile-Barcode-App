@@ -4,10 +4,12 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from django.db import transaction
 from django.db.models import Max
 
-from .models import Fabric,Barcode, Roll
-from .serializer import FabricSerializer, RollSerializer
+from .models import Fabric,Barcode,Roll, Dispatch
+from .serializer import FabricSerializer, RollSerializer, DispatchSerializer
+from .utils import get_financial_year,create_dispatch
 
 from barcode import Code128
 from barcode.writer import ImageWriter
@@ -99,3 +101,166 @@ class RollViewSet(ModelViewSet):
             content_type="image/png"
         )
     
+
+class DispatchViewSet(ModelViewSet):
+    queryset = Dispatch.objects.all()
+    serializer_class = DispatchSerializer
+
+    def perform_create(self,serializer):
+
+        fy = get_financial_year()
+
+        max_seq = Dispatch.objects.filter(
+            financial_year=fy
+        ).aggregate(
+            max_sequence=Max('sequence_no')
+        )['max_sequence']
+
+        next_seq = 1 if max_seq is None else max_seq + 1
+        
+        dispatch_no = f"{fy}{next_seq:04d}"
+
+        serializer.save(
+            financial_year=fy,
+            sequence_no=next_seq,
+            dispatch_no=dispatch_no
+        )
+
+    @action( 
+        detail=False,
+        methods=["post"]
+    )
+
+    def add_roll(self, request):
+
+        barcode_value = request.data.get( "barcode" )
+        fabric_type_id = int(request.data.get("fabric_type")) #If frontend send string converts to int
+        try:
+            barcode = Barcode.objects.select_related(
+                "roll",
+                "roll__fabric_type"
+            ).get(barcode=barcode_value)
+
+        except Barcode.DoesNotExist:
+
+            return Response(
+                {"error":"Barcode not found"},
+                status=400
+            )
+        
+        roll = barcode.roll
+
+        if (roll.fabric_type.id != fabric_type_id):
+
+            return Response({
+                    "error" : "Mismatching Fabric type"
+                },status=400
+            )
+        
+        if roll.dispatch_status == "dispatched":
+
+            return Response({
+                    "error":"Roll already dispatched"
+                },status=400
+            )
+        
+        return Response({
+            "id": roll.id,
+            "roll_no": roll.roll_no,
+            "meters": roll.meters,
+            "weight": roll.weight,
+            "barcode": barcode.barcode,
+            "fabric_name": roll.fabric_type.type
+        })
+
+    @action(
+        detail=False,
+        methods=["post"]
+    )
+    def finalize(self, request):
+
+        customer_name = request.data.get(
+            "customer_name"
+        )
+
+        vehicle_no = request.data.get(
+            "vehicle_no"
+        )
+
+        fabric_type_id = request.data.get(
+            "fabric_type"
+        )
+
+        barcodes = request.data.get(
+            "barcodes",
+            []
+        )
+
+        if not barcodes:
+
+            return Response(
+                {
+                    "error":
+                    "No rolls selected"
+                },
+                status=400
+            )
+
+        with transaction.atomic():
+
+            # Create Dispatch
+            dispatch = create_dispatch(
+                customer_name,
+                vehicle_no,
+                fabric_type_id
+            )
+
+            for barcode_value in barcodes:
+
+                try:
+
+                    barcode = Barcode.objects.select_related(
+                        "roll",
+                        "roll__fabric_type"
+                    ).get(
+                        barcode=barcode_value
+                    )
+
+                except Barcode.DoesNotExist:
+
+                    raise ValidationError(
+                        f"{barcode_value} not found"
+                    )
+
+                roll = barcode.roll
+
+                # Fabric validation
+                if (
+                    roll.fabric_type_id
+                    != fabric_type_id
+                ):
+
+                    raise ValidationError(
+                        f"{roll.roll_no} fabric mismatch"
+                    )
+
+                # Already dispatched
+                if roll.dispatch_status == "dispatched":
+
+                    raise ValidationError(
+                        f"{roll.roll_no} already dispatched"
+                    )
+
+                roll.dispatch_status = "dispatched"
+                roll.dispatched = dispatch
+
+                roll.save()
+
+                barcode.delete()
+
+            return Response({
+                "message":
+                "Dispatch completed",
+                "dispatch_no":
+                dispatch.dispatch_no
+            })
