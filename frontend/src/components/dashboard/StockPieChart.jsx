@@ -4,14 +4,9 @@ import {
   Cell,
   ResponsiveContainer,
 } from "recharts";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const data = [
-  { name: "Cotton", value: 40 },
-  { name: "Polyester", value: 20 },
-  { name: "Silk", value: 15 },
-  { name: "Blended", value: 15 },
-  { name: "Others", value: 10 },
-];
 
 const COLORS = [
   "#7EC3FF",
@@ -22,6 +17,24 @@ const COLORS = [
 ];
 
 function StockPieChart() {
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+
+    axios.get("http://127.0.0.1:8000/api/fabrics/stock_distribution/")
+      .then((res) => {
+        setData(res.data);
+      });
+
+  }, []);
+
+  const total = data.reduce(
+    (sum, item) => sum + item.value,
+    0
+  );
+
+
   return (
     <div className="flex items-center justify-between w-full h-full px-4">
 
@@ -39,7 +52,7 @@ function StockPieChart() {
               {data.map((entry, index) => (
                 <Cell
                   key={index}
-                  fill={COLORS[index]}
+                  fill={COLORS[index % COLORS.length]}
                 />
               ))}
             </Pie>
@@ -62,7 +75,7 @@ function StockPieChart() {
               <div
                 className="w-3 h-3 rounded-full"
                 style={{
-                  backgroundColor: COLORS[index],
+                  backgroundColor: COLORS[index % COLORS.length],
                 }}
               />
               <span className="text-slate-700">
@@ -71,7 +84,14 @@ function StockPieChart() {
             </div>
 
             <span className="font-medium text-slate-700">
-              {item.value}%
+              {
+                total > 0
+                  ? (
+                      (item.value / total) *
+                      100
+                    ).toFixed(1)
+                  : 0
+              }%
             </span>
           </div>
         ))}

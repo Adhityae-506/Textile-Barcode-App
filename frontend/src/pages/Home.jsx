@@ -149,21 +149,19 @@ function Home() {
 
         </div>
 
-        {/* Production Report */}
-        <div className="bg-white rounded-3xl p-4 shadow-md flex-1 overflow-hidden">
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
+
+        {/* Production Report */}
+        <div className="bg-white rounded-3xl p-4 mt-5 shadow-md flex-1 overflow-hidden">
+
+          <div className="flex flex-col justify-between items-center gap-20 mb-4">
 
             <h2 className="text-xl md:text-2xl font-bold text-slate-800">
-              Production vs Remaining Stocks
+              Running Production
             </h2>
-
             
-
-          </div>
-
-          <div className="h-[220px]">
             <ProductionBarChart />
+        
           </div>
 
         </div>

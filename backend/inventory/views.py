@@ -355,13 +355,6 @@ class DashboardAPIView(APIView):
 
                 "remaining": remaining,
 
-                "total": (
-                    dispatched +
-                    remaining
-                )
-
             })
 
-        return Response({
-            "production_chart": production_chart
-        })
+        return Response(production_chart)
