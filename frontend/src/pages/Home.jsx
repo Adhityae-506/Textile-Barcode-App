@@ -1,5 +1,8 @@
 import { useState } from "react";
 import DashboardLayout from "./DashboardLayout";
+import StockPieChart from "../components/dashboard/StockPieChart";
+import ProductionBarChart from "../components/dashboard/ProductionBarChart";
+
 
 function Home() {
   const dispatches = [
@@ -47,6 +50,25 @@ function Home() {
     );
   };
 
+
+  const stockData = [
+    { name: "Cotton", value: 4200 },
+    { name: "Jute", value: 2800 },
+    { name: "Polyester", value: 1800 },
+    { name: "Cotton Gray", value: 1200 },
+    { name: "Cotton Polyester", value: 900 },
+  ];
+
+const productionData = [
+    { date: "17 Jun", meters: 1800 },
+    { date: "18 Jun", meters: 2200 },
+    { date: "19 Jun", meters: 2100 },
+    { date: "20 Jun", meters: 2600 },
+    { date: "21 Jun", meters: 2400 },
+    { date: "22 Jun", meters: 2800 },
+    { date: "23 Jun", meters: 3000 },
+  ];
+
   const current = dispatches[currentIndex];
 
   return (
@@ -54,10 +76,10 @@ function Home() {
       <div className="min-h-screen bg-slate-100 p-4 md:p-6 flex flex-col gap-6">
 
         {/* Top Section */}
-        <div className="flex flex-col xl:flex-row gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
           {/* Recent Dispatch Card */}
-          <div className="flex-1 bg-white rounded-3xl p-5 md:p-6 shadow-md">
+          <div className="bg-white rounded-3xl p-6 shadow-md">
             <h2 className="text-2xl md:text-3xl font-bold text-blue-700 mb-6">
               Recent Dispatch
             </h2>
@@ -148,12 +170,9 @@ function Home() {
           {/* Stocks Card */}
           <div
             className="
-              w-full
-              xl:w-[380px]
               bg-white
               rounded-3xl
-              p-5
-              md:p-6
+              p-6
               shadow-md
             "
           >
@@ -173,7 +192,7 @@ function Home() {
                 text-slate-500
               "
             >
-              Pie Chart
+              <StockPieChart /> 
             </div>
           </div>
         </div>
@@ -197,29 +216,32 @@ function Home() {
           className="
             bg-white
             rounded-3xl
-            p-5
-            md:p-6
+            p-6
             shadow-md
           "
         >
-          <h2 className="text-xl md:text-2xl font-bold text-center mb-6">
-            Production Report
-          </h2>
+          <div className="flex justify-between items-center mb-6">
 
-          <div
-            className="
-              h-[250px]
-              md:h-[350px]
-              rounded-2xl
-              bg-slate-50
-              flex
-              items-center
-              justify-center
-              text-slate-500
-            "
-          >
-            Bar Chart
+            <h2 className="text-2xl font-bold text-slate-800">
+              Production vs Remaining Stocks
+            </h2>
+
+            <select
+              className="
+                border
+                rounded-lg
+                px-4
+                py-2
+                text-sm
+              "
+            >
+              <option>This Year</option>
+              <option>Last Year</option>
+            </select>
+
           </div>
+
+          <ProductionBarChart />
         </div>
 
       </div>
