@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from django.db import transaction
-from django.db.models import Max
+from django.db.models import Max, Sum, Q
 
 from .models import Fabric,Barcode,Roll, Dispatch
 from .serializer import FabricSerializer, RollSerializer, DispatchSerializer
@@ -15,6 +16,7 @@ from barcode import Code128
 from barcode.writer import ImageWriter
 from io import BytesIO
 from django.http import HttpResponse
+from datetime import timedelta
 
 
 class FabricViewSet(ModelViewSet):
@@ -28,6 +30,43 @@ class FabricViewSet(ModelViewSet):
             {"message" : "New Fabric created"},
             status = status.HTTP_200_OK
         )
+    
+    @action(
+        detail=False,
+        methods=["get"]
+    )
+    def stock_distribution(self, request):
+
+        fabrics = Fabric.objects.order_by("-stock")
+
+        top_five = fabrics[:5]
+        remaining = fabrics[5:]
+
+        chart_data = []
+
+        for fabric in top_five:
+
+            chart_data.append({
+                "name": fabric.type,
+                "value": fabric.stock
+            })
+
+        others_stock = sum(
+            fabric.stock
+            for fabric in remaining
+        )
+
+        if others_stock > 0:
+
+            chart_data.append({
+                "name": "Others",
+                "value": others_stock
+            })
+
+        return Response(chart_data)
+    
+
+
         
 class RollViewSet(ModelViewSet):
     queryset = Roll.objects.all()
@@ -264,3 +303,65 @@ class DispatchViewSet(ModelViewSet):
                 "dispatch_no":
                 dispatch.dispatch_no
             })
+        
+
+
+class DashboardAPIView(APIView):
+
+    def get(self, request):
+
+        # Bar Chart Data
+        one_months_ago = (
+            timezone.now().date()
+            - timedelta(days=30)
+        )
+
+        top_fabrics = (
+            Fabric.objects
+            .annotate(
+
+                dispatched=Sum(
+                    "rolls__meters",
+                    filter=Q(
+                        rolls__dispatch_status="dispatched",
+                        rolls__date__gte=one_months_ago
+                    )
+                ),
+
+                remaining=Sum(
+                    "rolls__meters",
+                    filter=Q(
+                        rolls__dispatch_status="not_dispatched",
+                        rolls__date__gte=one_months_ago
+                    )
+                )
+
+            )
+            .order_by("-remaining")[:10]
+        )
+
+        production_chart = []
+
+        for fabric in top_fabrics:
+
+            dispatched = fabric.dispatched or 0
+            remaining = fabric.remaining or 0
+
+            production_chart.append({
+
+                "fabric": fabric.type,
+
+                "dispatched": dispatched,
+
+                "remaining": remaining,
+
+                "total": (
+                    dispatched +
+                    remaining
+                )
+
+            })
+
+        return Response({
+            "production_chart": production_chart
+        })
