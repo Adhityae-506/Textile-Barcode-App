@@ -2,12 +2,10 @@ import { Printer, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 function BarcodeTable({
-    onPrint,
-    onDelete,
-  }) 
-  
-  {
-  const [data,setData] = useState([]);
+  onPrint,
+  onDelete,
+}) {
+  const [data, setData] = useState([]);
 
   const ITEMS_PER_PAGE = 5;
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,10 +15,10 @@ function BarcodeTable({
   const currentItems = data.slice(startIndex, endIndex);
 
 
-  const handleDelete = async(id) =>{
+  const handleDelete = async (id) => {
 
     const confirmDelete = window.confirm(
-        "Delete this barcode?"
+      "Delete this barcode?"
     );
 
     if (!confirmDelete) return;
@@ -30,17 +28,17 @@ function BarcodeTable({
       await axios.delete(`http://127.0.0.1:8000/api/barcode/${id}/`);
 
       setData(prev =>
-          prev.filter(item => item.id !== id)
+        prev.filter(item => item.id !== id)
       );
 
     }
     catch (err) {
-      alert ("Deletion failed");
+      alert("Deletion failed");
     }
 
   }
 
-  {/*API to get the barcodes to display below */}
+  {/*API to get the barcodes to display below */ }
   useEffect(() => {
 
     const fetchBarcodes = async () => {
@@ -73,14 +71,14 @@ function BarcodeTable({
   useEffect(() => {
 
     const pages = Math.ceil(
-        data.length / ITEMS_PER_PAGE
+      data.length / ITEMS_PER_PAGE
     );
 
     if (
-        currentPage > pages &&
-        pages > 0
+      currentPage > pages &&
+      pages > 0
     ) {
-        setCurrentPage(pages);
+      setCurrentPage(pages);
     }
 
   }, [data]);
@@ -213,58 +211,58 @@ function BarcodeTable({
       {data.length > 0 && (
 
         <div className="flex items-center justify-between mt-6">
-            <p className="text-slate-600">
-                showing{" "}
+          <p className="text-slate-600">
+            showing{" "}
 
-                {startIndex + 1}
+            {startIndex + 1}
 
-                {" "}to{" "}
+            {" "}to{" "}
 
-                {Math.min(endIndex, data.length)}
+            {Math.min(endIndex, data.length)}
 
-                {" "}of{" "}
+            {" "}of{" "}
 
-                {data.length}
+            {data.length}
 
-                {" "} items
-            </p>
-            <div className="flex items-center gap-3">
-                <button disabled={currentPage===1} onClick={() => setCurrentPage(prev => prev - 1)}
-                    className="w-10 h-10 border rounded-lg flex items-center justify-center disabled:opacity-40">
-                    <ChevronLeft size={18} />
-                </button>
+            {" "} items
+          </p>
+          <div className="flex items-center gap-3">
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}
+              className="w-10 h-10 border rounded-lg flex items-center justify-center disabled:opacity-40">
+              <ChevronLeft size={18} />
+            </button>
 
-                {Array.from(
-                  { length: totalPages },
-                  (_,index) => {
+            {Array.from(
+              { length: totalPages },
+              (_, index) => {
 
-                    const page = index + 1;
+                const page = index + 1;
 
-                    return (
-                      <button key={page} onClick={() => setCurrentPage(page)
-                      }
-                      className={`w-10 h-10 rounded-lg font-medium ${currentPage === page ? "bg-blue-700 text-white" : "border text-slate-700"}`}>
-                        {page}
-                      </button>
-                    );
+                return (
+                  <button key={page} onClick={() => setCurrentPage(page)
                   }
-                )}
+                    className={`w-10 h-10 rounded-lg font-medium ${currentPage === page ? "bg-blue-700 text-white" : "border text-slate-700"}`}>
+                    {page}
+                  </button>
+                );
+              }
+            )}
 
-                <button
-                  disabled={
-                    currentPage === 
-                    totalPages
-                  }
-                  onClick={() => setCurrentPage(
-                    prev => prev + 1
-                  )} 
-                  className="w-10 h-10 border rounded-lg flex items-center justify-center disabled:opacity-40"
-                  >
-                    <ChevronRight size={18} />
-                  
-                </button>
+            <button
+              disabled={
+                currentPage ===
+                totalPages
+              }
+              onClick={() => setCurrentPage(
+                prev => prev + 1
+              )}
+              className="w-10 h-10 border rounded-lg flex items-center justify-center disabled:opacity-40"
+            >
+              <ChevronRight size={18} />
 
-            </div>
+            </button>
+
+          </div>
         </div>
       )}
 
