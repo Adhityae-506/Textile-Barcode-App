@@ -20,10 +20,21 @@ const LabelledPreview = forwardRef(
         "
       >
 
-    return (
-        <div
-            className="w-5xl border p-4 mt-4 bg-white w-[400px]"
-        >
+        {!barcodeData ? (
+
+          <div className="text-center">
+
+            <h3
+              className="
+                text-lg
+                font-semibold
+                text-slate-500
+              "
+            >
+              No Barcode Generated Yet
+            </h3>
+
+          </div>
 
         ) : (
 
