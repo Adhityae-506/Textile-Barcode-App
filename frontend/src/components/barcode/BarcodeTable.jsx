@@ -1,22 +1,91 @@
 import { Printer, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 function BarcodeTable({
-  data,
-  onPrint,
-  onDelete,
-}) {
+    onPrint,
+    onDelete,
+  }) 
+  
+  {
+  const [data,setData] = useState([]);
 
   const ITEMS_PER_PAGE = 5;
-
   const [currentPage, setCurrentPage] = useState(1);
-
   const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
-
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-
   const endIndex = startIndex + ITEMS_PER_PAGE;
-
   const currentItems = data.slice(startIndex, endIndex);
+
+
+  const handleDelete = async(id) =>{
+
+    const confirmDelete = window.confirm(
+        "Delete this barcode?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+
+      await axios.delete(`http://127.0.0.1:8000/api/barcode/${id}/`);
+
+      setData(prev =>
+          prev.filter(item => item.id !== id)
+      );
+
+    }
+    catch (err) {
+      alert ("Deletion failed");
+    }
+
+  }
+
+  {/*API to get the barcodes to display below */}
+  useEffect(() => {
+
+    const fetchBarcodes = async () => {
+
+      try {
+
+        const res = await axios.get(
+          "http://127.0.0.1:8000/api/barcode/"
+        );
+
+        setData(res.data);
+
+      } catch (err) {
+
+        console.error(
+          "Failed to load fabrics",
+          err
+        );
+
+      }
+
+    };
+
+    fetchBarcodes();
+
+  }, []);
+
+  {/*Suppose you're on page 14 and delete the last item.
+    After deletion: total pages will decrease but current page will still be 14 This will avoid it */}
+  useEffect(() => {
+
+    const pages = Math.ceil(
+        data.length / ITEMS_PER_PAGE
+    );
+
+    if (
+        currentPage > pages &&
+        pages > 0
+    ) {
+        setCurrentPage(pages);
+    }
+
+  }, [data]);
+
+
 
   return (
     <div className="mt-10">
@@ -31,7 +100,7 @@ function BarcodeTable({
 
           <thead>
 
-            <tr className="bg-blue-900 text-white">git 
+            <tr className="bg-blue-900 text-white">
 
               <th className="p-4 text-left">
                 Barcode
@@ -117,9 +186,7 @@ function BarcodeTable({
                       </button>
 
                       <button
-                        onClick={() =>
-                          onDelete(item.id)
-                        }
+                        onClick={() => handleDelete(item.id)}
                       >
                         <Trash2
                           size={18}

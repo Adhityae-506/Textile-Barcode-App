@@ -315,7 +315,6 @@ function BarcodeGenerator() {
       {/* Generated Barcode Table */}
 
       <BarcodeTable
-        data={generatedBarcodes}
         onDelete={handleDelete}
         onPrint={handleTablePrint}
       />

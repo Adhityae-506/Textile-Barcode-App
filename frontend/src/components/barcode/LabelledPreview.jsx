@@ -35,7 +35,7 @@ const LabelledPreview = forwardRef(
             </h3>
 
           </div>
-
+          
         ) : (
 
           <div
@@ -49,6 +49,7 @@ const LabelledPreview = forwardRef(
               justify-center
             "
           >
+    
 
             <div className="w-full space-y-2 text-base">
 
