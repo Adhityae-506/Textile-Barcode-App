@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.urls import path
-from .views import FabricViewSet, RollViewSet, DispatchViewSet
+from django.urls import path, include
+from .views import FabricViewSet, RollViewSet, DispatchViewSet, DashboardAPIView
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -9,4 +9,17 @@ router.register("barcode",RollViewSet)
 router.register("dispatch",DispatchViewSet)
 
 
-urlpatterns = router.urls
+urlpatterns = [
+
+    path(
+        "",
+        include(router.urls)
+    ),
+
+    path(
+        "dashboard/",
+        DashboardAPIView.as_view(),
+        name="dashboard"
+    ),
+
+]
