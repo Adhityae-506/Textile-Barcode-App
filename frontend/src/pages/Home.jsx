@@ -3,7 +3,6 @@ import DashboardLayout from "./DashboardLayout";
 import StockPieChart from "../components/dashboard/StockPieChart";
 import ProductionBarChart from "../components/dashboard/ProductionBarChart";
 
-
 function Home() {
   const dispatches = [
     {
@@ -38,6 +37,8 @@ function Home() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const current = dispatches[currentIndex];
+
   const nextDispatch = () => {
     setCurrentIndex((prev) =>
       prev === dispatches.length - 1 ? 0 : prev + 1
@@ -50,198 +51,121 @@ function Home() {
     );
   };
 
-
-  const stockData = [
-    { name: "Cotton", value: 4200 },
-    { name: "Jute", value: 2800 },
-    { name: "Polyester", value: 1800 },
-    { name: "Cotton Gray", value: 1200 },
-    { name: "Cotton Polyester", value: 900 },
-  ];
-
-const productionData = [
-    { date: "17 Jun", meters: 1800 },
-    { date: "18 Jun", meters: 2200 },
-    { date: "19 Jun", meters: 2100 },
-    { date: "20 Jun", meters: 2600 },
-    { date: "21 Jun", meters: 2400 },
-    { date: "22 Jun", meters: 2800 },
-    { date: "23 Jun", meters: 3000 },
-  ];
-
-  const current = dispatches[currentIndex];
-
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-slate-100 p-4 md:p-6 flex flex-col gap-6">
+      <div className="bg-slate-100 h-[calc(100vh-80px)] px-4 pt-1 pb-4 overflow-hidden flex flex-col gap-3">
 
-        {/* Top Section */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Top Cards */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
 
-          {/* Recent Dispatch Card */}
-          <div className="bg-white rounded-3xl p-6 shadow-md">
-            <h2 className="text-2xl md:text-3xl font-bold text-blue-700 mb-6">
+          {/* Recent Dispatch */}
+          <div className="bg-white rounded-3xl p-4 shadow-md">
+            <h2 className="text-2xl font-bold text-blue-700 mb-4">
               Recent Dispatch
             </h2>
 
-            <div className="flex flex-col lg:flex-row justify-between items-center gap-8">
+            <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
 
-              {/* Details */}
-              <div className="w-full lg:w-auto space-y-4">
+              <div className="w-full space-y-3">
 
-                <div className="flex justify-between gap-4">
-                  <span className="font-semibold min-w-[110px]">
-                    Date
-                  </span>
+                <div className="flex justify-between">
+                  <span className="font-semibold">Date</span>
                   <span>{current.date}</span>
                 </div>
 
-                <div className="flex justify-between gap-4">
-                  <span className="font-semibold min-w-[110px]">
-                    Type
-                  </span>
+                <div className="flex justify-between">
+                  <span className="font-semibold">Type</span>
                   <span>{current.type}</span>
                 </div>
 
-                <div className="flex justify-between gap-4">
-                  <span className="font-semibold min-w-[110px]">
-                    Meters
-                  </span>
+                <div className="flex justify-between">
+                  <span className="font-semibold">Meters</span>
                   <span>{current.meters}</span>
                 </div>
 
-                <div className="flex justify-between gap-4">
-                  <span className="font-semibold min-w-[110px]">
-                    Company
-                  </span>
+                <div className="flex justify-between">
+                  <span className="font-semibold">Company</span>
                   <span>{current.company}</span>
                 </div>
 
-                <div className="flex justify-between gap-4">
-                  <span className="font-semibold min-w-[110px]">
-                    DC Number
-                  </span>
+                <div className="flex justify-between">
+                  <span className="font-semibold">DC Number</span>
                   <span>{current.dcNumber}</span>
                 </div>
 
-                <button className="mt-4 px-5 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800 transition">
+                <button className="mt-2 px-5 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800">
                   View Details
                 </button>
               </div>
 
-              {/* Slider Controls */}
-              <div className="flex flex-col items-center gap-5">
+              <div className="flex flex-col items-center gap-4">
 
-               
+                <div className="text-6xl">📦</div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <button
                     onClick={prevDispatch}
-                    className="
-                      w-10 h-10
-                      rounded-full
-                      bg-blue-700
-                      text-white
-                      hover:bg-blue-800
-                      transition
-                    "
+                    className="w-10 h-10 rounded-full bg-blue-700 text-white"
                   >
                     ◀
                   </button>
 
                   <button
                     onClick={nextDispatch}
-                    className="
-                      w-10 h-10
-                      rounded-full
-                      bg-blue-700
-                      text-white
-                      hover:bg-blue-800
-                      transition
-                    "
+                    className="w-10 h-10 rounded-full bg-blue-700 text-white"
                   >
                     ▶
                   </button>
                 </div>
+
               </div>
+            </div>
+
+            {/* Dots */}
+            <div className="flex justify-center gap-2 mt-3">
+              {dispatches.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-3 h-3 rounded-full ${
+                    currentIndex === index
+                      ? "bg-black"
+                      : "bg-slate-300"
+                  }`}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Stocks Card */}
-          <div
-            className="
-              bg-white
-              rounded-3xl
-              p-6
-              shadow-md
-            "
-          >
-            <h2 className="text-2xl md:text-3xl font-bold text-blue-700 mb-6">
+          {/* Stocks */}
+          <div className="bg-white rounded-3xl p-4 shadow-md">
+            <h2 className="text-2xl font-bold text-blue-700 mb-4">
               Stocks
             </h2>
 
-            <div
-              className="
-                h-[220px]
-                md:h-[260px]
-                rounded-2xl
-                bg-slate-50
-                flex
-                items-center
-                justify-center
-                text-slate-500
-              "
-            >
-              <StockPieChart /> 
+            <div className="h-[200px]">
+              <StockPieChart />
             </div>
           </div>
-        </div>
 
-        {/* Slider Dots */}
-        <div className="flex justify-center gap-3">
-          {dispatches.map((_, index) => (
-            <div
-              key={index}
-              className={`w-3 h-3 rounded-full ${
-                currentIndex === index
-                  ? "bg-black"
-                  : "bg-slate-300"
-              }`}
-            />
-          ))}
         </div>
 
         {/* Production Report */}
-        <div
-          className="
-            bg-white
-            rounded-3xl
-            p-6
-            shadow-md
-          "
-        >
-          <div className="flex justify-between items-center mb-6">
+        <div className="bg-white rounded-3xl p-4 shadow-md flex-1 overflow-hidden">
 
-            <h2 className="text-2xl font-bold text-slate-800">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
+
+            <h2 className="text-xl md:text-2xl font-bold text-slate-800">
               Production vs Remaining Stocks
             </h2>
 
-            <select
-              className="
-                border
-                rounded-lg
-                px-4
-                py-2
-                text-sm
-              "
-            >
-              <option>This Year</option>
-              <option>Last Year</option>
-            </select>
+            
 
           </div>
 
-          <ProductionBarChart />
+          <div className="h-[220px]">
+            <ProductionBarChart />
+          </div>
+
         </div>
 
       </div>

@@ -4,8 +4,7 @@ function DashboardLayout({ children }) {
 
   return (
 
-    <div className="relative min-h-screen bg-slate-100">
-
+    <div className="relative h-screen overflow-hidden bg-slate-100">
       {/* Left Blue Strip */}
 
       <div
