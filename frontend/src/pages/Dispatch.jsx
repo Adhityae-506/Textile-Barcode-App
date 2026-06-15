@@ -1,46 +1,79 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import DashboardLayout from "./DashboardLayout";
+import axios from "axios";
 
 function Dispatch() {
   const navigate = useNavigate();
 
-  const dispatches = [
-    {
-      dispatchNo: "DC001",
-      customer: "ABC Textiles",
-      vehicle: "TN38AB1234",
-      date: "21/06/2026",
-      status: "Done",
-    },
-    {
-      dispatchNo: "DC002",
-      customer: "XYZ Fabrics",
-      vehicle: "TN39CD5678",
-      date: "22/06/2026",
-      status: "Done",
-    },
-    {
-      dispatchNo: "DC003",
-      customer: "PQR Mills",
-      vehicle: "TN40EF9999",
-      date: "23/06/2026",
-      status: "Pending",
-    },
-    {
-      dispatchNo: "DC004",
-      customer: "LMN Exports",
-      vehicle: "TN41GH2222",
-      date: "24/06/2026",
-      status: "Done",
-    },
-    {
-      dispatchNo: "DC005",
-      customer: "Sakthi Textiles",
-      vehicle: "TN55AB6789",
-      date: "25/06/2026",
-      status: "Done",
-    },
-  ];
+  const [dispatches, setDispatches] = useState([]);
+
+  const [currentPage, setCurrentPage] =
+    useState(1);
+
+  const [totalPages, setTotalPages] =
+    useState(1);
+
+  const [months, setMonths] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState("");
+
+  {/*USed to obtain the available financial months for filtering in the Dispatch list */}
+  useEffect(() => {
+
+    axios
+      .get(
+        "http://127.0.0.1:8000/api/dispatch/available_months/"
+      )
+      .then((res) => {
+
+        setMonths(res.data)
+
+        if (res.data.length > 0) {
+
+          setSelectedMonth(
+            `${res.data[0].month}-${res.data[0].year}`
+          );
+        }
+
+      });
+
+  }, []);
+
+  const [month, year] = selectedMonth.split("-");
+
+  {/*Used to obtained filtered data using their month for dispatch list */}
+  useEffect(() => {
+
+    const fetchDispatches = async () => {
+
+      try {
+
+        const res = await axios.get(
+          `http://127.0.0.1:8000/api/dispatch/by_month/?month=${month}&year=${year}&page=${currentPage}`
+        );
+
+        setDispatches(
+          res.data.results
+        );
+
+        setTotalPages(
+          Math.ceil(
+            res.data.count / 10
+          )
+        );
+
+      } catch (err) {
+
+        console.error(err);
+
+      }
+
+    };
+
+    fetchDispatches();
+
+  }, [selectedMonth,, currentPage]);
+
 
   return (
     <DashboardLayout>
@@ -76,25 +109,21 @@ function Dispatch() {
           <div className="mb-6">
 
             <select
-              className="
-                w-64
-                border
-                border-slate-300
-                rounded-xl
-                px-4
-                py-3
-                bg-white
-                focus:outline-none
-                focus:ring-2
-                focus:ring-blue-500
-              "
+              value={selectedMonth}
+              onChange={(e) => {
+                setSelectedMonth(e.target.value);
+                setCurrentPage(1);
+              }}
             >
-              <option>June 2026</option>
-              <option>May 2026</option>
-              <option>April 2026</option>
-              <option>March 2026</option>
-              <option>February 2026</option>
-              <option>January 2026</option>
+              {months.map((month) => (
+                <option
+                  key={`${month.month}-${month.year}`}
+                  value={`${month.month}-${month.year}`}
+                >
+                  {month.label}
+                </option>
+
+              ))}
             </select>
 
           </div>
@@ -124,10 +153,6 @@ function Dispatch() {
                     Date
                   </th>
 
-                  <th className="p-4 text-left font-semibold">
-                    Status
-                  </th>
-
                   <th className="p-4 text-center font-semibold">
                     Action
                   </th>
@@ -150,33 +175,21 @@ function Dispatch() {
                   >
 
                     <td className="p-4">
-                      {dispatch.dispatchNo}
+                      {dispatch.dispatch_no}
                     </td>
 
                     <td className="p-4">
-                      {dispatch.customer}
+                      {dispatch.customer_name}
                     </td>
 
                     <td className="p-4">
-                      {dispatch.vehicle}
+                      {dispatch.vehicle_no}
                     </td>
 
                     <td className="p-4">
-                      {dispatch.date}
-                    </td>
-
-                    <td className="p-4">
-
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          dispatch.status === "Done"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
-                      >
-                        {dispatch.status}
-                      </span>
-
+                      {new Date(
+                        dispatch.dispatched_at
+                      ).toLocaleDateString("en-GB")}
                     </td>
 
                     <td className="p-4 text-center">
@@ -208,64 +221,34 @@ function Dispatch() {
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="flex justify-center items-center gap-4 mt-8 ">
 
             <button
-              className="
-                px-4
-                py-2
-                border
-                rounded-lg
-                hover:bg-slate-100
-              "
+              disabled={currentPage === 1}
+              className="px-3 py-1 border border-2 border-sky-500 rounded-lg shadow-lg flex items-center justify-center disabled:opacity-40"
+              onClick={() =>
+                setCurrentPage(
+                  prev => prev - 1
+                )
+              }
             >
               Prev
             </button>
 
-            <button
-              className="
-                px-4
-                py-2
-                rounded-lg
-                bg-blue-700
-                text-white
-              "
-            >
-              1
-            </button>
+            <span className="">
+              Page {currentPage} of {totalPages}
+            </span>
 
             <button
-              className="
-                px-4
-                py-2
-                border
-                rounded-lg
-                hover:bg-slate-100
-              "
-            >
-              2
-            </button>
-
-            <button
-              className="
-                px-4
-                py-2
-                border
-                rounded-lg
-                hover:bg-slate-100
-              "
-            >
-              3
-            </button>
-
-            <button
-              className="
-                px-4
-                py-2
-                border
-                rounded-lg
-                hover:bg-slate-100
-              "
+            className="px-3 py-1 border border-2 border-sky-500 rounded-lg shadow-lg flex items-center justify-center disabled:opacity-40"
+              disabled={
+                currentPage === totalPages
+              }
+              onClick={() =>
+                setCurrentPage(
+                  prev => prev + 1
+                )
+              }
             >
               Next
             </button>

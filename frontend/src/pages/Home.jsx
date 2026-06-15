@@ -6,6 +6,7 @@ import StockPieChart from "../components/dashboard/StockPieChart";
 import ProductionBarChart from "../components/dashboard/ProductionBarChart";
 
 function Home() {
+  
   const dispatches = [
     {
       date: "21/06/2026",
