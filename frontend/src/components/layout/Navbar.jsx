@@ -1,7 +1,17 @@
 import { UserCircle } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/sakthi_textile_logo.png";
 
 function Navbar() {
+  const location = useLocation();
+
+  const navItems = [
+    { name: "Home", path: "/" },
+    { name: "Dispatch", path: "/dispatch" },
+    { name: "Fabric", path: "/fabric" },
+    { name: "Barcodes", path: "/barcode" },
+  ];
+
   return (
     <header className="h-17 bg-white border-b border-slate-200 px-12 flex items-center justify-between">
 
@@ -14,44 +24,39 @@ function Navbar() {
         />
       </div>
 
-      {/* Navigation + Profile */}
+      {/* Navigation */}
       <div className="flex items-center gap-12">
+
         <nav className="flex items-center gap-10 text-sm font-medium">
-          <button className="relative text-blue-700 font-semibold">
-            Home
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`relative ${
+                location.pathname === item.path
+                  ? "text-blue-700 font-semibold"
+                  : "text-slate-700 hover:text-blue-700"
+              }`}
+            >
+              {item.name}
 
-            <span
-              className="
-                absolute
-                left-0
-                -bottom-4
-                w-full
-                h-[2px]
-                bg-blue-700
-              "
-            />
-          </button>
-
-          <button className="text-slate-700 hover:text-blue-700">
-            Dispatch
-          </button>
-
-          <button className="text-slate-700 hover:text-blue-700">
-            Stocks
-          </button>
-
-          <button className="text-slate-700 hover:text-blue-700">
-            Report
-          </button>
-
-          <button className="text-slate-700 hover:text-blue-700">
-            Barcodes
-          </button>
-
+              {location.pathname === item.path && (
+                <span
+                  className="
+                    absolute
+                    left-0
+                    -bottom-4
+                    w-full
+                    h-[2px]
+                    bg-blue-700
+                  "
+                />
+              )}
+            </Link>
+          ))}
         </nav>
 
         {/* User Profile */}
-
         <button
           className="
             w-12
