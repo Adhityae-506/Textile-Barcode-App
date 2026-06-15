@@ -3,282 +3,349 @@ import axios from "axios";
 
 const DispatchRolls = () => {
 
-    const [dispatchInfo, setDispatchInfo] = useState(null);
-    const [barcode, setBarcode] = useState("");
-    const [scannedRolls, setScannedRolls] = useState(() => { {/*If 'scannedRolls' already in local storage directly set them*/}
+  const [dispatchInfo, setDispatchInfo] = useState(null);
+  const [barcode, setBarcode] = useState("");
 
-    const saved = localStorage.getItem(
-        "dispatch_rolls"
+  const [scannedRolls, setScannedRolls] = useState(() => {
+    const saved = localStorage.getItem("dispatch_rolls");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Load dispatch info and scanned rolls
+  useEffect(() => {
+    const dispatch = JSON.parse(
+      localStorage.getItem("dispatch")
     );
 
-    return saved ? JSON.parse(saved) : [];
+    const rolls =
+      JSON.parse(
+        localStorage.getItem("dispatch_rolls")
+      ) || [];
 
-});
+    setDispatchInfo(dispatch);
+    setScannedRolls(rolls);
 
+  }, []);
 
-    {/*Set 'dispatchInfo' and 'scannedRoll' from local storage*/}
-    useEffect(() => {
+  // Save scanned rolls
+  useEffect(() => {
+    localStorage.setItem(
+      "dispatch_rolls",
+      JSON.stringify(scannedRolls)
+    );
+  }, [scannedRolls]);
 
-        const dispatch =
-            JSON.parse(
-                localStorage.getItem(
-                    "dispatch"
-                )
-            );
+  const handleScan = async () => {
 
-        const rolls =
-            JSON.parse(
-                localStorage.getItem(
-                    "dispatch_rolls"
-                )
-            ) || [];
+    if (!barcode.trim()) return;
 
-        setDispatchInfo(dispatch);
+    if (!dispatchInfo) {
+      alert("Dispatch information not found");
+      return;
+    }
 
-        setScannedRolls(rolls);
+    try {
 
-    }, []);
-
-
-    {/* At each state render, the local storage 'scannedRoll' is updated */}
-    useEffect(() => {
-
-        localStorage.setItem(
-            "dispatch_rolls",
-            JSON.stringify(scannedRolls)
-        );
-    }, [scannedRolls]);
-
-    const handleScan = async () => {
-
-        try {
-
-            const res = await axios.post(
-                "http://127.0.0.1:8000/api/dispatch/add_roll/",
-                {
-                    barcode,
-                    fabric_type:
-                        dispatchInfo.fabric_type
-                }
-            );
-
-            const exists =
-                scannedRolls.some(
-                    roll =>
-                        roll.barcode ===
-                        res.data.barcode
-                );
-
-            if (exists) {
-
-                alert(
-                    "Already scanned"
-                );
-
-                return;
-            }
-
-            setScannedRolls([
-                ...scannedRolls,
-                res.data
-            ]);
-
-            setBarcode("");
-
+      const res = await axios.post(
+        "http://127.0.0.1:8000/api/dispatch/add_roll/",
+        {
+          barcode,
+          fabric_type:
+            dispatchInfo.fabric_type,
         }
-        catch (err) {
+      );
 
-            alert(
-                err.response?.data?.error
-            );
+      const exists = scannedRolls.some(
+        (roll) =>
+          roll.barcode ===
+          res.data.barcode
+      );
 
+      if (exists) {
+        alert("Already scanned");
+        return;
+      }
+
+      setScannedRolls([
+        ...scannedRolls,
+        res.data,
+      ]);
+
+      setBarcode("");
+
+    } catch (err) {
+
+      alert(
+        err.response?.data?.error ||
+        "Scan failed"
+      );
+
+    }
+  };
+
+  const removeRoll = (barcode) => {
+
+    setScannedRolls(
+      scannedRolls.filter(
+        (roll) =>
+          roll.barcode !== barcode
+      )
+    );
+  };
+
+  const finalizeDispatch = async () => {
+
+    if (scannedRolls.length === 0) {
+      alert("Scan at least one roll");
+      return;
+    }
+
+    try {
+
+      const res = await axios.post(
+        "http://127.0.0.1:8000/api/dispatch/finalize/",
+        {
+          customer_name:
+            dispatchInfo.customer_name,
+
+          vehicle_no:
+            dispatchInfo.vehicle_no,
+
+          fabric_type:
+            dispatchInfo.fabric_type,
+
+          barcodes:
+            scannedRolls.map(
+              (roll) =>
+                roll.barcode
+            ),
         }
-    };
+      );
 
-    const removeRoll = (barcode) => {
+      alert(
+        `Dispatch Created : ${res.data.dispatch_no}`
+      );
 
-        setScannedRolls(
-            scannedRolls.filter(
-                roll =>
-                    roll.barcode !== barcode
-            )
-        );
-    };
+      localStorage.removeItem(
+        "dispatch"
+      );
 
-    const finalizeDispatch = async () => {
+      localStorage.removeItem(
+        "dispatch_rolls"
+      );
 
-        try {
+      setScannedRolls([]);
 
-            const res = await axios.post("http://127.0.0.1:8000/api/dispatch/finalize/",
-                {
-                    customer_name:
-                        dispatchInfo.customer_name,
+    } catch (err) {
 
-                    vehicle_no:
-                        dispatchInfo.vehicle_no,
+      alert(
+        err.response?.data?.error ||
+        "Dispatch failed"
+      );
 
-                    fabric_type:
-                        dispatchInfo.fabric_type,
+    }
+  };
 
-                    barcodes:
-                        scannedRolls.map(
-                            roll =>
-                                roll.barcode
-                        )
-                }
-            );
-
-            alert(
-                `Dispatch Created : ${res.data.dispatch_no}`
-            );
-
-            localStorage.removeItem(
-                "dispatch"
-            );
-
-            localStorage.removeItem(
-                "dispatch_rolls"
-            );
-
-            setScannedRolls([]);
-
-        }
-        catch (err) {
-
-            alert(
-                err.response?.data?.error
-            );
-
-        }
-    };
-
+  if (!dispatchInfo) {
     return (
+      <div className="p-6">
+        Loading Dispatch Details...
+      </div>
+    );
+  }
 
-        <div className="p-6">
+  return (
+    <div className="bg-slate-100 min-h-screen p-4 md:p-6">
 
-            <h2 className="text-2xl mb-4">
-                Scan Rolls
-            </h2>
+      <div className="bg-white rounded-3xl shadow-md p-6">
 
-            <input
-                className="border p-2 w-full"
-                placeholder="Scan Barcode"
-                value={barcode}
-                onChange={(e) =>
-                    setBarcode(
-                        e.target.value
-                    )
-                }
-                onKeyDown={(e) => {
+        <h2 className="text-3xl font-bold text-blue-700 mb-8">
+          Scan Dispatch Rolls
+        </h2>
 
-                    if (
-                        e.key === "Enter"
-                    ) {
+        {/* Dispatch Info */}
 
-                        handleScan();
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 
-                    }
+          <div className="bg-slate-50 p-4 rounded-xl">
+            <p className="text-slate-500 text-sm">
+              Customer
+            </p>
 
-                }}
-            />
+            <p className="font-semibold">
+              {dispatchInfo.customer_name}
+            </p>
+          </div>
 
-            <table className="w-full mt-6 border">
+          <div className="bg-slate-50 p-4 rounded-xl">
+            <p className="text-slate-500 text-sm">
+              Vehicle No
+            </p>
 
-                <thead>
+            <p className="font-semibold">
+              {dispatchInfo.vehicle_no}
+            </p>
+          </div>
 
-                    <tr>
+          <div className="bg-slate-50 p-4 rounded-xl">
+            <p className="text-slate-500 text-sm">
+              Fabric Type
+            </p>
 
-                        <th>Roll</th>
-                        <th>Meters</th>
-                        <th>Weight</th>
-                        <th></th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {
-                        scannedRolls.map(
-                            roll => (
-
-                                <tr
-                                    key={
-                                        roll.barcode
-                                    }
-                                >
-
-                                    <td>
-                                        {
-                                            roll.roll_no
-                                        }
-                                    </td>
-
-                                    <td>
-                                        {
-                                            roll.meters
-                                        }
-                                    </td>
-
-                                    <td>
-                                        {
-                                            roll.weight
-                                        }
-                                    </td>
-
-                                    <td>
-
-                                        <button
-                                            onClick={() =>
-                                                removeRoll(
-                                                    roll.barcode
-                                                )
-                                            }
-                                        >
-                                            Remove
-                                        </button>
-
-                                    </td>
-
-                                </tr>
-
-                            )
-                        )
-                    }
-
-                </tbody>
-
-            </table>
-
-            <div className="mt-4">
-
-                <strong>
-                    Total Rolls :
-                </strong>
-
-                {" "}
-
-                {scannedRolls.length}
-
-            </div>
-
-            <button
-                onClick={finalizeDispatch}
-                className="
-                    mt-4
-                    bg-green-600
-                    text-white
-                    px-4
-                    py-2
-                    rounded
-                "
-            >
-                Dispatch
-            </button>
+            <p className="font-semibold">
+              {dispatchInfo.fabric_type}
+            </p>
+          </div>
 
         </div>
-    );
-}
 
+        {/* Barcode Input */}
+
+        <div className="mb-8">
+
+          <label className="block text-sm font-medium mb-2">
+            Scan Barcode
+          </label>
+
+          <input
+            type="text"
+            placeholder="Scan barcode and press Enter"
+            value={barcode}
+            onChange={(e) =>
+              setBarcode(e.target.value)
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleScan();
+              }
+            }}
+            className="
+              w-full
+              h-14
+              px-4
+              border
+              border-slate-300
+              rounded-xl
+              focus:outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+          />
+
+        </div>
+
+        {/* Table */}
+
+        <div className="overflow-x-auto">
+
+          <table className="w-full border border-slate-200">
+
+            <thead className="bg-blue-700 text-white">
+
+              <tr>
+                <th className="p-3 text-left">
+                  Roll No
+                </th>
+
+                <th className="p-3 text-left">
+                  Meters
+                </th>
+
+                <th className="p-3 text-left">
+                  Weight
+                </th>
+
+                <th className="p-3 text-center">
+                  Action
+                </th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {scannedRolls.map((roll) => (
+
+                <tr
+                  key={roll.barcode}
+                  className="border-b hover:bg-slate-50"
+                >
+
+                  <td className="p-3">
+                    {roll.roll_no}
+                  </td>
+
+                  <td className="p-3">
+                    {roll.meters}
+                  </td>
+
+                  <td className="p-3">
+                    {roll.weight}
+                  </td>
+
+                  <td className="p-3 text-center">
+
+                    <button
+                      onClick={() =>
+                        removeRoll(
+                          roll.barcode
+                        )
+                      }
+                      className="
+                        bg-red-500
+                        text-white
+                        px-4
+                        py-1
+                        rounded-lg
+                        hover:bg-red-600
+                      "
+                    >
+                      Remove
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        {/* Footer */}
+
+        <div className="flex justify-between items-center mt-8 border-t pt-4">
+
+          <div className="text-lg font-semibold">
+            Total Rolls :
+            <span className="ml-2 text-blue-700">
+              {scannedRolls.length}
+            </span>
+          </div>
+
+          <button
+            onClick={finalizeDispatch}
+            className="
+              bg-green-600
+              hover:bg-green-700
+              text-white
+              px-8
+              py-3
+              rounded-xl
+              font-medium
+            "
+          >
+            Dispatch
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+};
 export default DispatchRolls;
