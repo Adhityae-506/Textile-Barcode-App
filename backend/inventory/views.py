@@ -31,10 +31,7 @@ class FabricViewSet(ModelViewSet):
             status = status.HTTP_200_OK
         )
     
-    @action(
-        detail=False,
-        methods=["get"]
-    )
+    @action( detail=False, methods=["get"] )
     def stock_distribution(self, request):
 
         fabrics = Fabric.objects.order_by("-stock")
@@ -139,6 +136,24 @@ class RollViewSet(ModelViewSet):
             buffer.getvalue(),
             content_type="image/png"
         )
+    
+    @action(detail=False, methods=["get"])
+    def list_barcode(self, request):
+
+        rolls = Roll.objects.filter(
+            dispatch_status="not_dispatched"
+        ).select_related(
+                "barcode",
+                "fabric_type"
+        )
+
+        serializer = self.get_serializer(
+            rolls,
+            many=True
+        )
+
+        return Response(serializer.data)
+
     
 
 class DispatchViewSet(ModelViewSet):
@@ -343,6 +358,8 @@ class DashboardAPIView(APIView):
         production_chart = []
 
         for fabric in top_fabrics:
+
+            
 
             dispatched = fabric.dispatched or 0
             remaining = fabric.remaining or 0

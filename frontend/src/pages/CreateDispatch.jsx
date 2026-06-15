@@ -36,7 +36,7 @@ function CreateDispatch() {
 
             setCustomerName(dispatch.customer_name || "");
             setVehicleNo(dispatch.vehicle_no || "");
-            setFabricType(dispatch.fabric_type || "");
+            setSelectedFabric(dispatch.fabric_type || "");
 
         }
 
@@ -47,6 +47,7 @@ function CreateDispatch() {
         const fetchFabrics = async () => {
             try {
                 const res = await axios.get("http://127.0.0.1:8000/api/fabrics/");
+                console.log(res.data);
                 setFabrics(res.data);
             }
             catch (err) {
