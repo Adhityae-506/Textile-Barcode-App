@@ -14,6 +14,46 @@ function BarcodeTable({
   const currentItems = data.slice(startIndex, endIndex);
 
 
+  {/*Visible page slider*/}
+  const MAX_VISIBLE_PAGES = 4;
+
+  const currentGroup = Math.floor(
+    (currentPage - 1) / MAX_VISIBLE_PAGES
+  );
+  const startPage =
+    currentGroup * MAX_VISIBLE_PAGES + 1;
+  const endPage = Math.min(
+    startPage + MAX_VISIBLE_PAGES - 1,
+    totalPages
+  );
+  const visiblePages = [];
+
+  for (
+    let page = startPage;
+    page <= endPage;
+    page++
+  ) {
+    visiblePages.push(page);
+  }
+
+  {/*Next buttonn click in page slider*/}
+  const goNextGroup = () => {
+  const nextPage = startPage + MAX_VISIBLE_PAGES;
+
+    if (nextPage <= totalPages) {
+      setCurrentPage(nextPage);
+    }
+  };
+
+  const goPrevGroup = () => {
+    const prevPage = startPage - MAX_VISIBLE_PAGES;
+
+    if (prevPage >= 1) {
+      setCurrentPage(prevPage);
+    }
+  };
+
+
   const handleDelete = async (id) => {
 
     const confirmDelete = window.confirm(
@@ -226,95 +266,40 @@ function BarcodeTable({
             {" "} items
           </p>
           <div className="flex items-center gap-3">
-
-            <button
-              disabled={currentPage === 1}
-              onClick={() =>
-                setCurrentPage(prev => prev - 1)
-              }
+            <button 
+              onClick={goPrevGroup}
+              disabled={startPage === 1}
               className="
-      w-10 h-10
-      border
-      rounded-lg
-      flex
-      items-center
-      justify-center
-      disabled:opacity-40
-    "
+                w-10 h-10 
+                border rounded-lg 
+                flex items-center 
+                justify-center 
+                disabled:opacity-40
+              "
             >
               <ChevronLeft size={18} />
             </button>
 
-            {/* First Page */}
-            <button
-              onClick={() => setCurrentPage(1)}
-              className={`w-10 h-10 rounded-lg font-medium ${currentPage === 1
-                  ? "bg-blue-700 text-white"
-                  : "border text-slate-700"
-                }`}
-            >
-              1
-            </button>
+            {visiblePages.map((page) => (
 
-            {/* Dots */}
-            {currentPage > 3 && (
-              <span className="px-2 text-slate-500">
-                ...
-              </span>
-            )}
-
-            {/* Current Page */}
-            {currentPage !== 1 &&
-              currentPage !== totalPages && (
-                <button
-                  className="
-          w-10 h-10
-          rounded-lg
-          bg-blue-700
-          text-white
-          font-medium
-        "
-                >
-                  {currentPage}
-                </button>
-              )}
-
-            {/* Dots */}
-            {currentPage < totalPages - 2 && (
-              <span className="px-2 text-slate-500">
-                ...
-              </span>
-            )}
-
-            {/* Last Page */}
-            {totalPages > 1 && (
               <button
-                onClick={() =>
-                  setCurrentPage(totalPages)
-                }
-                className={`w-10 h-10 rounded-lg font-medium ${currentPage === totalPages
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`w-10 h-10 rounded-lg font-medium ${
+                  currentPage === page
                     ? "bg-blue-700 text-white"
                     : "border text-slate-700"
-                  }`}
+                }`}
               >
-                {totalPages}
+                {page}
               </button>
-            )}
+
+            ))}
 
             <button
-              disabled={currentPage === totalPages}
-              onClick={() =>
-                setCurrentPage(prev => prev + 1)
-              }
-              className="
-              w-10 h-10
-              border
-              rounded-lg
-              flex
-              items-center
-              justify-center
-              disabled:opacity-40
-              "
+              onClick={goNextGroup}
+              disabled={endPage === totalPages}
+              className="w-10 h-10 border rounded-lg flex items-center justify-center disabled:opacity-40"
             >
               <ChevronRight size={18} />
             </button>

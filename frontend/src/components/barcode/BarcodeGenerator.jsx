@@ -11,13 +11,23 @@ function BarcodeGenerator() {
 
   const [previewData, setPreviewData] = useState(null);
   const [fabrics, setFabrics] = useState([]);
-  const [fabric, setFabric] = useState("");
-  const [search, setSearch] = useState("");
-  const [selectedFabric, setSelectedFabric] = useState(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [meters, setMeters] = useState(0);
   const [weight, setWeight] = useState(0);
   const [machine, setMachine] = useState(0);
+
+  {/*Type in to search for type of fabric implementation */}
+  const [search, setSearch] = useState("");
+  const [selectedFabric, setSelectedFabric] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false)
+
+  const filteredFabrics = fabrics.filter(
+      fabric =>
+          fabric.type
+              .toLowerCase()
+              .startsWith(search.toLowerCase())
+  );
+
+
 
   const printRef = useRef();
 
@@ -398,7 +408,7 @@ function BarcodeGenerator() {
       >
         {/* Fabric */}
 
-        <div>
+        <div className="relative">
 
           <label
             className="
@@ -414,88 +424,82 @@ function BarcodeGenerator() {
             </span>
           </label>
 
-          <div className="relative">
-
-            <input
-              type="text"
-              value={search}
-              placeholder="Type fabric..."
-              className="
-        w-full
-        border
-        rounded-xl
-        px-4
-        py-3
-      "
-              onChange={(e) => {
-
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
                 setSearch(e.target.value);
-
                 setShowSuggestions(true);
-
                 setSelectedFabric(null);
+            }}
+            className="
+              w-full
+              border
+              rounded-xl
+              px-4
+              py-3
+            "
+            placeholder="Type fabric..."
+        />
 
-                setFabric("");
+        {
+          showSuggestions &&
+          search &&
+          filteredFabrics.length > 0 && (
 
-              }}
-            />
+            <div
+              className="
+                  absolute
+                  left-0
+                  top-full
+                  mt-1
+                  w-full
+                  bg-white
+                  border
+                  rounded-xl
+                  shadow-lg
+                  max-h-48
+                  overflow-y-auto
+                  z-50
+              "
+            >
 
-            {
-              showSuggestions &&
-              search &&
-              filteredFabrics.length > 0 && (
+              {
+                filteredFabrics.map(fabric => (
 
-                <div
-                  className="
-            absolute
-            top-full
-            left-0
-            right-0
-            bg-white
-            border
-            rounded-xl
-            shadow-lg
-            mt-1
-            max-h-48
-            overflow-y-auto
-            z-50
-          "
-                >
+                  <div
+                      key={fabric.id}
+                      className="
+                          p-2
+                          cursor-pointer
+                          hover:bg-gray-100
+                      "
+                      onClick={() => {
 
-                  {
-                    filteredFabrics.map(item => (
+                          setSearch(
+                              fabric.type
+                          );
 
-                      <div
-                        key={item.id}
-                        className="
-                  p-3
-                  cursor-pointer
-                  hover:bg-slate-100
-                "
-                        onClick={() => {
+                          setSelectedFabric(
+                              fabric
+                          );
 
-                          setSearch(item.type);
+                          setShowSuggestions(
+                              false
+                          );
 
-                          setSelectedFabric(item);
+                      }}
+                  >
+                      {fabric.type}
+                  </div>
 
-                          setFabric(item.id);
+                ))
+              }
 
-                          setShowSuggestions(false);
+            </div>
 
-                        }}
-                      >
-                        {item.type}
-                      </div>
-
-                    ))
-                  }
-
-                </div>
-
-              )
-            }
-
-          </div>
+          )
+        }
 
         </div>
 
@@ -519,7 +523,7 @@ function BarcodeGenerator() {
 
           <input
             type="number"
-            placeholder="500"
+            placeholder="Mtrs"
             className="
             w-full
             border
@@ -589,7 +593,7 @@ function BarcodeGenerator() {
 
           <input
             type="number"
-            placeholder="Loom No"
+            placeholder="Machine No"
             className="
             w-full
             border
