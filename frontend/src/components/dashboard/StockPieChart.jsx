@@ -14,6 +14,7 @@ const COLORS = [
   "#FFD54A",
   "#78E3D1",
   "#C792F7",
+  "#3ddb52"
 ];
 
 function StockPieChart() {

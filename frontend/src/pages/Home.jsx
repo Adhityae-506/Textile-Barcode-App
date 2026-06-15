@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import DashboardLayout from "./DashboardLayout";
 import StockPieChart from "../components/dashboard/StockPieChart";
 import ProductionBarChart from "../components/dashboard/ProductionBarChart";
@@ -7,161 +9,216 @@ function Home() {
   const dispatches = [
     {
       date: "21/06/2026",
-      type: "50+50",
+      type: "Cotton",
       meters: "1500",
-      company: "XYZ",
-      dcNumber: "012354685",
+      company: "XYZ Textiles",
+      dcNumber: "DC001",
+      emoji: "🧵",
+      bg: "bg-blue-50",
+      border: "border-blue-200",
     },
     {
       date: "22/06/2026",
-      type: "60+40",
+      type: "Polyester",
       meters: "2000",
-      company: "ABC",
-      dcNumber: "012354686",
+      company: "ABC Fabrics",
+      dcNumber: "DC002",
+      emoji: "✨",
+      bg: "bg-green-50",
+      border: "border-green-200",
     },
     {
       date: "23/06/2026",
-      type: "40+40",
+      type: "Jute",
       meters: "1800",
-      company: "PQR",
-      dcNumber: "012354687",
+      company: "PQR Mills",
+      dcNumber: "DC003",
+      emoji: "🌾",
+      bg: "bg-yellow-50",
+      border: "border-yellow-200",
     },
     {
       date: "24/06/2026",
-      type: "80+20",
+      type: "Silk",
       meters: "2500",
-      company: "LMN",
-      dcNumber: "012354688",
+      company: "LMN Silks",
+      dcNumber: "DC004",
+      emoji: "👑",
+      bg: "bg-pink-50",
+      border: "border-pink-200",
+    },
+    {
+      date: "25/06/2026",
+      type: "Denim",
+      meters: "2200",
+      company: "DEF Denim",
+      dcNumber: "DC005",
+      emoji: "👖",
+      bg: "bg-indigo-50",
+      border: "border-indigo-200",
     },
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const current = dispatches[currentIndex];
-
-  const nextDispatch = () => {
-    setCurrentIndex((prev) =>
-      prev === dispatches.length - 1 ? 0 : prev + 1
-    );
-  };
-
-  const prevDispatch = () => {
-    setCurrentIndex((prev) =>
-      prev === 0 ? dispatches.length - 1 : prev - 1
-    );
-  };
-
   return (
     <DashboardLayout>
-      <div className="bg-slate-100 h-[calc(100vh-80px)] px-4 pt-1 pb-4 overflow-hidden flex flex-col gap-3">
+      <div className="bg-slate-100 h-[calc(100vh-80px)] px-4 pt-2 pb-4 overflow-hidden flex flex-col gap-4">
 
-        {/* Top Cards */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+        {/* Top Section */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
 
           {/* Recent Dispatch */}
-          <div className="bg-white rounded-3xl p-4 shadow-md">
-            <h2 className="text-2xl font-bold text-blue-700 mb-4">
-              Recent Dispatch
-            </h2>
+          <div className="bg-white rounded-3xl p-5 shadow-md">
 
-            <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div className="flex justify-between items-center mb-5">
 
-              <div className="w-full space-y-3">
+              <h2 className="text-2xl font-bold text-blue-700">
+                Recent Dispatch
+              </h2>
 
-                <div className="flex justify-between">
-                  <span className="font-semibold">Date</span>
-                  <span>{current.date}</span>
+              <span className="text-sm text-slate-500">
+                Auto Updated
+              </span>
+
+            </div>
+
+            <div className="relative overflow-hidden h-[280px]">
+
+              <div className="flex items-center">
+
+                {/* Details */}
+
+                <div className="flex-1 flex-col space-y-4">
+
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      Date
+                    </span>
+
+                    <span className="font-semibold">
+                      {dispatches[currentIndex].date}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      Company
+                    </span>
+
+                    <span className="font-semibold">
+                      {dispatches[currentIndex].company}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      Fabric
+                    </span>
+
+                    <span className="font-semibold">
+                      {dispatches[currentIndex].type}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      Meters
+                    </span>
+
+                    <span className="font-semibold text-green-600">
+                      {dispatches[currentIndex].meters}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      DC Number
+                    </span>
+
+                    <span className="font-semibold">
+                      {dispatches[currentIndex].dcNumber}
+                    </span>
+                  </div>
+
+                </div>
+                
+                {/* Fabric Icon */}
+
+                <div className="ml-10 p-10 flex flex-col items-center bg-amber-100 rounded-xl ">
+
+                  <div className="text-8xl">
+                    {dispatches[currentIndex].emoji}
+                  </div>
+
+                  <div className="mt-3 text-center">
+
+                    <p className="font-bold text-lg">
+                      {dispatches[currentIndex].type}
+                    </p>
+
+                    <p className="text-sm text-slate-500">
+                      Fabric Type
+                    </p>
+
+                  </div>
+
                 </div>
 
-                <div className="flex justify-between">
-                  <span className="font-semibold">Type</span>
-                  <span>{current.type}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="font-semibold">Meters</span>
-                  <span>{current.meters}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="font-semibold">Company</span>
-                  <span>{current.company}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="font-semibold">DC Number</span>
-                  <span>{current.dcNumber}</span>
-                </div>
-
-                <button className="mt-2 px-5 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800">
-                  View Details
-                </button>
               </div>
 
-              <div className="flex flex-col items-center gap-4">
-
-                <div className="text-6xl">📦</div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={prevDispatch}
-                    className="w-10 h-10 rounded-full bg-blue-700 text-white"
-                  >
-                    ◀
-                  </button>
-
-                  <button
-                    onClick={nextDispatch}
-                    className="w-10 h-10 rounded-full bg-blue-700 text-white"
-                  >
-                    ▶
-                  </button>
-                </div>
-
-              </div>
             </div>
 
             {/* Dots */}
-            <div className="flex justify-center gap-2 mt-3">
+
+            <div className="flex justify-center gap-2 mt-4">
+
               {dispatches.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-3 h-3 rounded-full ${
+                  onClick={() => setCurrentIndex(index)}
+                  className={`transition-all duration-300 rounded-full ${
                     currentIndex === index
-                      ? "bg-black"
-                      : "bg-slate-300"
+                      ? "w-8 h-3 bg-blue-700"
+                      : "w-3 h-3 bg-slate-300"
                   }`}
                 />
               ))}
+
             </div>
+
           </div>
 
           {/* Stocks */}
-          <div className="bg-white rounded-3xl p-4 shadow-md">
+
+          <div className="bg-white rounded-3xl p-5 shadow-md">
+
             <h2 className="text-2xl font-bold text-blue-700 mb-4">
-              Stocks
+              Stocks Overview
             </h2>
 
-            <div className="h-[200px]">
+            <div className="h-[280px]">
               <StockPieChart />
             </div>
+
           </div>
 
         </div>
 
+        {/* Production Chart */}
 
+        <div className="bg-white rounded-3xl p-5 shadow-md flex-1 overflow-hidden">
 
-        {/* Production Report */}
-        <div className="bg-white rounded-3xl p-4 mt-5 shadow-md flex-1 overflow-hidden">
+          <div className="flex flex-col h-full">
 
-          <div className="flex flex-col justify-between items-center gap-20 mb-4">
-
-            <h2 className="text-xl md:text-2xl font-bold text-slate-800">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">
               Running Production
             </h2>
-            
-            <ProductionBarChart />
-        
+
+            <div className="flex-1">
+              <ProductionBarChart />
+            </div>
+
           </div>
 
         </div>
