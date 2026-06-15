@@ -10,7 +10,6 @@ import BarcodeTable from "./BarcodeTable";
 function BarcodeGenerator() {
 
   const [previewData, setPreviewData] = useState(null);
-  const [generatedBarcodes, setGeneratedBarcodes] = useState([]);
   const [fabrics, setFabrics] = useState([]);
   const [fabric, setFabric] = useState("");
   const [meters, setMeters] = useState(0);
@@ -61,11 +60,6 @@ function BarcodeGenerator() {
       );
 
       setPreviewData(res.data);
-
-      setGeneratedBarcodes(prev => [
-        res.data,
-        ...prev
-      ]);
 
     } catch (err) {
 
