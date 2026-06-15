@@ -21,7 +21,7 @@ function CreateDispatch() {
         fabric =>
             fabric.type
                 .toLowerCase()
-                .startsWith(search.toLowerCase())
+                .includes(search.toLowerCase())
     );
 
 
@@ -88,123 +88,258 @@ function CreateDispatch() {
 
         navigate("/dispatch/scan");
     };
-    
-    return (     
-        <DashboardLayout> 
-        <div className="p-6">
-            <h2 className="text-2xl mb-4">
-                Create Dispatch
-            </h2>
+     
+   return (
+  <DashboardLayout>
+    <div className="bg-slate-100 h-full p-4 md:p-6">
 
-            <div className="space-y-4">
+      <div className="bg-white rounded-3xl shadow-md p-8 h-full">
 
-                <input
-                    className="border p-2 w-full"
-                    placeholder="Customer Name"
-                    value={customerName}
-                    onChange={(e) =>
-                        setCustomerName(
-                            e.target.value
-                        )
-                    }
-                />
+        <h2 className="text-3xl font-bold text-blue-700 mb-10">
+          Create New Dispatch
+        </h2>
 
-                <input
-                    className="border p-2 w-full"
-                    placeholder="Vehicle Number"
-                    value={vehicleNo}
-                    onChange={(e) =>
-                        setVehicleNo(
-                            e.target.value
-                        )
-                    }
-                />
+        <div className="flex flex-col gap-10">
 
-                <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setShowSuggestions(true);
-                        setSelectedFabric(null);
-                    }}
-                    className="border p-2 w-full"
-                    placeholder="Type fabric..."
-                />
+          {/* Vehicle Number */}
 
+          <div className="flex items-center gap-6">
 
-                {
-                    showSuggestions &&
-                    search &&
-                    filteredFabrics.length > 0 && (
+            <div
+              className="
+                w-16
+                h-16
+                rounded-xl
+                bg-slate-100
+                flex
+                items-center
+                justify-center
+                text-3xl
+              "
+            >
+              🚚
+            </div>
+
+            <div className="flex-1">
+              <label className="text-sm text-slate-500">
+                Vehicle Number
+              </label>
+
+              <input
+                value={vehicleNo}
+                onChange={(e) =>
+                  setVehicleNo(e.target.value)
+                }
+                className="
+                  w-full
+                  h-14
+                  mt-2
+                  px-4
+                  rounded-xl
+                  border
+                  border-slate-200
+                  shadow-sm
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+              />
+            </div>
+
+          </div>
+
+          {/* Company Name */}
+
+          <div className="flex items-center gap-6">
+
+            <div
+              className="
+                w-16
+                h-16
+                rounded-xl
+                bg-slate-100
+                flex
+                items-center
+                justify-center
+                text-3xl
+              "
+            >
+              🏢
+            </div>
+
+            <div className="flex-1">
+              <label className="text-sm text-slate-500">
+                Company Name
+              </label>
+
+              <input
+                value={customerName}
+                onChange={(e) =>
+                  setCustomerName(e.target.value)
+                }
+                className="
+                  w-full
+                  h-14
+                  mt-2
+                  px-4
+                  rounded-xl
+                  border
+                  border-slate-200
+                  shadow-sm
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+              />
+            </div>
+
+          </div>
+
+          {/* Fabric Selection */}
+
+          <div className="flex items-start gap-6">
+
+            <div
+              className="
+                w-16
+                h-16
+                rounded-xl
+                bg-slate-100
+                flex
+                items-center
+                justify-center
+                text-3xl
+              "
+            >
+              🧵
+            </div>
+
+            <div className="flex-1 relative">
+
+              <label className="text-sm text-slate-500">
+                Fabric Type
+              </label>
+
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setShowSuggestions(true);
+                  setSelectedFabric(null);
+                }}
+                placeholder="Select Fabric Type"
+                className="
+                  w-full
+                  h-14
+                  mt-2
+                  px-4
+                  rounded-xl
+                  border
+                  border-slate-200
+                  shadow-sm
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+              />
+
+              {showSuggestions &&
+                search &&
+                filteredFabrics.length > 0 && (
+
+                  <div
+                    className="
+                      absolute
+                      top-20
+                      left-0
+                      right-0
+                      bg-white
+                      border
+                      rounded-xl
+                      shadow-lg
+                      max-h-60
+                      overflow-y-auto
+                      z-50
+                    "
+                  >
+
+                    {filteredFabrics.map(
+                      (fabric) => (
 
                         <div
-                            className="
-                                absolute
-                                bg-white
-                                border
-                                w-full
-                                max-h-48
-                                overflow-y-auto
-                                z-10
-                            "
+                          key={fabric.id}
+                          className="
+                            p-3
+                            cursor-pointer
+                            hover:bg-slate-100
+                          "
+                          onClick={() => {
+
+                            setSearch(
+                              fabric.type
+                            );
+
+                            setSelectedFabric(
+                              fabric
+                            );
+
+                            setShowSuggestions(
+                              false
+                            );
+                          }}
                         >
-
-                            {
-                                filteredFabrics.map(fabric => (
-
-                                    <div
-                                        key={fabric.id}
-                                        className="
-                                            p-2
-                                            cursor-pointer
-                                            hover:bg-gray-100
-                                        "
-                                        onClick={() => {
-
-                                            setSearch(
-                                                fabric.type
-                                            );
-
-                                            setSelectedFabric(
-                                                fabric
-                                            );
-
-                                            setShowSuggestions(
-                                                false
-                                            );
-
-                                        }}
-                                    >
-                                        {fabric.type}
-                                    </div>
-
-                                ))
-                            }
-
+                          {fabric.type}
                         </div>
 
-                    )
-                }
-                            
+                      )
+                    )}
 
-                <button
-                    onClick={handleContinue}
-                    className="
-                        bg-blue-600
-                        text-white
-                        px-4
-                        py-2
-                        rounded
-                    "
-                >
-                    Continue
-                </button>
+                  </div>
+
+                )}
 
             </div>
 
-        </div></DashboardLayout> 
-    );
+          </div>
+
+        </div>
+
+        {/* Footer */}
+
+        <div
+          className="
+            border-t
+            border-dashed
+            mt-16
+            pt-6
+            flex
+            justify-end
+          "
+        >
+
+          <button
+            onClick={handleContinue}
+            className="
+              bg-blue-700
+              hover:bg-blue-800
+              text-white
+              px-10
+              py-3
+              rounded-xl
+              font-medium
+            "
+          >
+            Next
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  </DashboardLayout>
+);
 }
 
 export default CreateDispatch;
