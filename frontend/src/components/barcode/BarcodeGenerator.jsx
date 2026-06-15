@@ -31,12 +31,12 @@ function BarcodeGenerator() {
 
   const printRef = useRef();
 
-  const filteredFabrics = fabrics.filter(
-    fabric =>
-      fabric.type
-        .toLowerCase()
-        .includes(search.toLowerCase())
-  );
+  // const filteredFabrics = fabrics.filter(
+  //   fabric =>
+  //     fabric.type
+  //       .toLowerCase()
+  //       .includes(search.toLowerCase())
+  // );
 
   useEffect(() => {
 
