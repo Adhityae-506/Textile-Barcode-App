@@ -16,9 +16,7 @@ function Navbar() {
 
       {/* Navigation + Profile */}
       <div className="flex items-center gap-12">
-
         <nav className="flex items-center gap-10 text-sm font-medium">
-
           <button className="relative text-blue-700 font-semibold">
             Home
 

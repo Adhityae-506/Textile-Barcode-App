@@ -2,7 +2,7 @@ import { Printer } from "lucide-react";
 
 function BarcodeActions({ onPrint }) {
   return (
-    <div className="flex justify-center mt-6">
+    <div className="flex justify-center">
       <button
         onClick={onPrint}
         className="
