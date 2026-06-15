@@ -13,7 +13,7 @@ const LabelledPreview = forwardRef(
           border
           rounded-xl
           shadow-md
-          min-h-[220px]
+          min-h-[160px]
           flex
           items-center
           justify-center

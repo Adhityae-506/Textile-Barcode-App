@@ -226,39 +226,97 @@ function BarcodeTable({
             {" "} items
           </p>
           <div className="flex items-center gap-3">
-            <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}
-              className="w-10 h-10 border rounded-lg flex items-center justify-center disabled:opacity-40">
+
+            <button
+              disabled={currentPage === 1}
+              onClick={() =>
+                setCurrentPage(prev => prev - 1)
+              }
+              className="
+      w-10 h-10
+      border
+      rounded-lg
+      flex
+      items-center
+      justify-center
+      disabled:opacity-40
+    "
+            >
               <ChevronLeft size={18} />
             </button>
 
-            {Array.from(
-              { length: totalPages },
-              (_, index) => {
+            {/* First Page */}
+            <button
+              onClick={() => setCurrentPage(1)}
+              className={`w-10 h-10 rounded-lg font-medium ${currentPage === 1
+                  ? "bg-blue-700 text-white"
+                  : "border text-slate-700"
+                }`}
+            >
+              1
+            </button>
 
-                const page = index + 1;
+            {/* Dots */}
+            {currentPage > 3 && (
+              <span className="px-2 text-slate-500">
+                ...
+              </span>
+            )}
 
-                return (
-                  <button key={page} onClick={() => setCurrentPage(page)
-                  }
-                    className={`w-10 h-10 rounded-lg font-medium ${currentPage === page ? "bg-blue-700 text-white" : "border text-slate-700"}`}>
-                    {page}
-                  </button>
-                );
-              }
+            {/* Current Page */}
+            {currentPage !== 1 &&
+              currentPage !== totalPages && (
+                <button
+                  className="
+          w-10 h-10
+          rounded-lg
+          bg-blue-700
+          text-white
+          font-medium
+        "
+                >
+                  {currentPage}
+                </button>
+              )}
+
+            {/* Dots */}
+            {currentPage < totalPages - 2 && (
+              <span className="px-2 text-slate-500">
+                ...
+              </span>
+            )}
+
+            {/* Last Page */}
+            {totalPages > 1 && (
+              <button
+                onClick={() =>
+                  setCurrentPage(totalPages)
+                }
+                className={`w-10 h-10 rounded-lg font-medium ${currentPage === totalPages
+                    ? "bg-blue-700 text-white"
+                    : "border text-slate-700"
+                  }`}
+              >
+                {totalPages}
+              </button>
             )}
 
             <button
-              disabled={
-                currentPage ===
-                totalPages
+              disabled={currentPage === totalPages}
+              onClick={() =>
+                setCurrentPage(prev => prev + 1)
               }
-              onClick={() => setCurrentPage(
-                prev => prev + 1
-              )}
-              className="w-10 h-10 border rounded-lg flex items-center justify-center disabled:opacity-40"
+              className="
+              w-10 h-10
+              border
+              rounded-lg
+              flex
+              items-center
+              justify-center
+              disabled:opacity-40
+              "
             >
               <ChevronRight size={18} />
-
             </button>
 
           </div>
