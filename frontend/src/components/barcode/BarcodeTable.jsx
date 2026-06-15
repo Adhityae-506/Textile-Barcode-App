@@ -302,7 +302,6 @@ function BarcodeTable({
               className="w-10 h-10 border rounded-lg flex items-center justify-center disabled:opacity-40"
             >
               <ChevronRight size={18} />
-
             </button>
 
           </div>

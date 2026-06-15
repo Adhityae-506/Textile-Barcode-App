@@ -31,6 +31,13 @@ function BarcodeGenerator() {
 
   const printRef = useRef();
 
+  const filteredFabrics = fabrics.filter(
+    fabric =>
+      fabric.type
+        .toLowerCase()
+        .includes(search.toLowerCase())
+  );
+
   useEffect(() => {
 
     const fetchFabrics = async () => {
@@ -399,18 +406,17 @@ function BarcodeGenerator() {
         items-end
       "
       >
-
         {/* Fabric */}
 
         <div className="relative">
 
           <label
             className="
-            block
-            text-sm
-            text-slate-700
-            mb-2
-          "
+      block
+      text-sm
+      text-slate-700
+      mb-2
+    "
           >
             Select Fabric
             <span className="text-red-500">
@@ -510,6 +516,9 @@ function BarcodeGenerator() {
           "
           >
             Quantity (Meters)
+            <span className="text-red-500">
+              {" "}*
+            </span>
           </label>
 
           <input
@@ -542,6 +551,9 @@ function BarcodeGenerator() {
           "
           >
             Weight (Kg)
+            <span className="text-red-500">
+              {" "}*
+            </span>
           </label>
 
           <input
@@ -574,6 +586,9 @@ function BarcodeGenerator() {
           "
           >
             Loom Number
+            <span className="text-red-500">
+              {" "}*
+            </span>
           </label>
 
           <input
