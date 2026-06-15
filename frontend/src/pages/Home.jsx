@@ -61,16 +61,6 @@ function Home() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) =>
-        prev === dispatches.length - 1 ? 0 : prev + 1
-      );
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <DashboardLayout>
       <div className="bg-slate-100 h-[calc(100vh-80px)] px-4 pt-2 pb-4 overflow-hidden flex flex-col gap-4">
@@ -95,121 +85,87 @@ function Home() {
 
             <div className="relative overflow-hidden h-[280px]">
 
-              <AnimatePresence mode="wait">
+              <div className="flex items-center">
 
-                <motion.div
-                  key={currentIndex}
-                  initial={{
-                    x: 400,
-                    opacity: 0,
-                  }}
-                  animate={{
-                    x: 0,
-                    opacity: 1,
-                  }}
-                  exit={{
-                    x: -400,
-                    opacity: 0,
-                  }}
-                  transition={{
-                    duration: 0.6,
-                  }}
-                  className={`
-                    absolute
-                    w-full
-                    rounded-2xl
-                    p-5
-                    border-2
-                    ${dispatches[currentIndex].bg}
-                    ${dispatches[currentIndex].border}
-                  `}
-                >
+                {/* Details */}
 
-                  <div className="flex justify-between items-center">
+                <div className="flex-1 flex-col space-y-4">
 
-                    {/* Details */}
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      Date
+                    </span>
 
-                    <div className="flex-1 space-y-4">
+                    <span className="font-semibold">
+                      {dispatches[currentIndex].date}
+                    </span>
+                  </div>
 
-                      <div className="flex justify-between">
-                        <span className="font-medium text-slate-500">
-                          Date
-                        </span>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      Company
+                    </span>
 
-                        <span className="font-semibold">
-                          {dispatches[currentIndex].date}
-                        </span>
-                      </div>
+                    <span className="font-semibold">
+                      {dispatches[currentIndex].company}
+                    </span>
+                  </div>
 
-                      <div className="flex justify-between">
-                        <span className="font-medium text-slate-500">
-                          Company
-                        </span>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      Fabric
+                    </span>
 
-                        <span className="font-semibold">
-                          {dispatches[currentIndex].company}
-                        </span>
-                      </div>
+                    <span className="font-semibold">
+                      {dispatches[currentIndex].type}
+                    </span>
+                  </div>
 
-                      <div className="flex justify-between">
-                        <span className="font-medium text-slate-500">
-                          Fabric
-                        </span>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      Meters
+                    </span>
 
-                        <span className="font-semibold">
-                          {dispatches[currentIndex].type}
-                        </span>
-                      </div>
+                    <span className="font-semibold text-green-600">
+                      {dispatches[currentIndex].meters}
+                    </span>
+                  </div>
 
-                      <div className="flex justify-between">
-                        <span className="font-medium text-slate-500">
-                          Meters
-                        </span>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-slate-500">
+                      DC Number
+                    </span>
 
-                        <span className="font-semibold text-green-600">
-                          {dispatches[currentIndex].meters}
-                        </span>
-                      </div>
+                    <span className="font-semibold">
+                      {dispatches[currentIndex].dcNumber}
+                    </span>
+                  </div>
 
-                      <div className="flex justify-between">
-                        <span className="font-medium text-slate-500">
-                          DC Number
-                        </span>
+                </div>
+                
+                {/* Fabric Icon */}
 
-                        <span className="font-semibold">
-                          {dispatches[currentIndex].dcNumber}
-                        </span>
-                      </div>
+                <div className="ml-10 p-10 flex flex-col items-center bg-amber-100 rounded-xl ">
 
-                    </div>
+                  <div className="text-8xl">
+                    {dispatches[currentIndex].emoji}
+                  </div>
 
-                    {/* Fabric Icon */}
+                  <div className="mt-3 text-center">
 
-                    <div className="ml-8 flex flex-col items-center">
+                    <p className="font-bold text-lg">
+                      {dispatches[currentIndex].type}
+                    </p>
 
-                      <div className="text-8xl">
-                        {dispatches[currentIndex].emoji}
-                      </div>
-
-                      <div className="mt-3 text-center">
-
-                        <p className="font-bold text-lg">
-                          {dispatches[currentIndex].type}
-                        </p>
-
-                        <p className="text-sm text-slate-500">
-                          Fabric Type
-                        </p>
-
-                      </div>
-
-                    </div>
+                    <p className="text-sm text-slate-500">
+                      Fabric Type
+                    </p>
 
                   </div>
 
-                </motion.div>
+                </div>
 
-              </AnimatePresence>
+              </div>
 
             </div>
 
@@ -220,10 +176,11 @@ function Home() {
               {dispatches.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-3 h-3 rounded-full ${
+                  onClick={() => setCurrentIndex(index)}
+                  className={`transition-all duration-300 rounded-full ${
                     currentIndex === index
-                      ? "bg-blue-700"
-                      : "bg-slate-300"
+                      ? "w-8 h-3 bg-blue-700"
+                      : "w-3 h-3 bg-slate-300"
                   }`}
                 />
               ))}
