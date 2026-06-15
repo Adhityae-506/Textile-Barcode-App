@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'barcode_management',
         'USER': 'postgres',
-        'PASSWORD': 'Adhitya@5106',
+        'PASSWORD': 'AIR...@@$$^^007',
         'HOST': 'localhost',
         'PORT': '5432',
     }
