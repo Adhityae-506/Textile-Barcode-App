@@ -145,7 +145,7 @@ class RollViewSet(ModelViewSet):
         ).select_related(
                 "barcode",
                 "fabric_type"
-        )
+        ).order_by("-id")
 
         serializer = self.get_serializer(
             rolls,

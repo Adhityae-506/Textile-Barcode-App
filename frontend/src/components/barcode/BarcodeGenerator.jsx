@@ -11,10 +11,21 @@ function BarcodeGenerator() {
 
   const [previewData, setPreviewData] = useState(null);
   const [fabrics, setFabrics] = useState([]);
-  const [fabric, setFabric] = useState("");
   const [meters, setMeters] = useState(0);
   const [weight, setWeight] = useState(0);
   const [machine, setMachine] = useState(0);
+
+  {/*Type in to search for type of fabric implementation */}
+  const [search, setSearch] = useState("");
+  const [selectedFabric, setSelectedFabric] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false)
+
+  const filteredFabrics = fabrics.filter(
+      fabric =>
+          fabric.type
+              .toLowerCase()
+              .startsWith(search.toLowerCase())
+  );
 
   const printRef = useRef();
 
@@ -52,7 +63,7 @@ function BarcodeGenerator() {
       const res = await axios.post(
         "http://127.0.0.1:8000/api/barcode/",
         {
-          fabric_type: fabric,
+          fabric_type: selectedFabric.id,
           machine_no: machine,
           meters: meters,
           weight: weight
@@ -386,18 +397,17 @@ function BarcodeGenerator() {
         items-end
       "
       >
-
         {/* Fabric */}
 
-        <div>
+        <div className="relative">
 
           <label
             className="
-            block
-            text-sm
-            text-slate-700
-            mb-2
-          "
+              block
+              text-sm
+              text-slate-700
+              mb-2
+            "
           >
             Select Fabric
             <span className="text-red-500">
@@ -405,32 +415,82 @@ function BarcodeGenerator() {
             </span>
           </label>
 
-          <select
-            value={fabric}
-            onChange={(e) =>
-              setFabric(Number(e.target.value))
-            }
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+                setSearch(e.target.value);
+                setShowSuggestions(true);
+                setSelectedFabric(null);
+            }}
             className="
-            w-full
-            border
-            rounded-xl
-            px-4
-            py-3
-          "
-          >
-            <option value="">
-              Select Fabric
-            </option>
+              w-full
+              border
+              rounded-xl
+              px-4
+              py-3
+            "
+            placeholder="Type fabric..."
+        />
 
-            {fabrics.map(f => (
-              <option
-                key={f.id}
-                value={f.id}
-              >
-                {f.type}
-              </option>
-            ))}
-          </select>
+        {
+          showSuggestions &&
+          search &&
+          filteredFabrics.length > 0 && (
+
+            <div
+              className="
+                  absolute
+                  left-0
+                  top-full
+                  mt-1
+                  w-full
+                  bg-white
+                  border
+                  rounded-xl
+                  shadow-lg
+                  max-h-48
+                  overflow-y-auto
+                  z-50
+              "
+            >
+
+              {
+                filteredFabrics.map(fabric => (
+
+                  <div
+                      key={fabric.id}
+                      className="
+                          p-2
+                          cursor-pointer
+                          hover:bg-gray-100
+                      "
+                      onClick={() => {
+
+                          setSearch(
+                              fabric.type
+                          );
+
+                          setSelectedFabric(
+                              fabric
+                          );
+
+                          setShowSuggestions(
+                              false
+                          );
+
+                      }}
+                  >
+                      {fabric.type}
+                  </div>
+
+                ))
+              }
+
+            </div>
+
+          )
+        }
 
         </div>
 
@@ -447,11 +507,14 @@ function BarcodeGenerator() {
           "
           >
             Quantity (Meters)
+            <span className="text-red-500">
+              {" "}*
+            </span>
           </label>
 
           <input
             type="number"
-            placeholder="500"
+            placeholder="Mtrs"
             className="
             w-full
             border
@@ -479,10 +542,14 @@ function BarcodeGenerator() {
           "
           >
             Weight (Kg)
+            <span className="text-red-500">
+              {" "}*
+            </span>
           </label>
 
           <input
             type="number"
+            placeholder="Weight"
             className="
             w-full
             border
@@ -510,10 +577,14 @@ function BarcodeGenerator() {
           "
           >
             Loom Number
+            <span className="text-red-500">
+              {" "}*
+            </span>
           </label>
 
           <input
             type="number"
+            placeholder="Machine No"
             className="
             w-full
             border

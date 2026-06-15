@@ -21,7 +21,7 @@ function CreateDispatch() {
         fabric =>
             fabric.type
                 .toLowerCase()
-                .includes(search.toLowerCase())
+                .startsWith(search.toLowerCase())
     );
 
 

@@ -13,7 +13,7 @@ function Navbar() {
   ];
 
   return (
-    <header className="h-20 bg-white border-b border-slate-200 px-12 flex items-center justify-between">
+    <header className="h-17 bg-white border-b border-slate-200 px-12 flex items-center justify-between">
 
       {/* Logo */}
       <div className="flex items-center">
