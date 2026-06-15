@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const DispatchRolls = () => {
 
@@ -10,6 +11,9 @@ const DispatchRolls = () => {
     const saved = localStorage.getItem("dispatch_rolls");
     return saved ? JSON.parse(saved) : [];
   });
+
+  const navigate = useNavigate();
+
 
   // Load dispatch info and scanned rolls
   useEffect(() => {
@@ -327,7 +331,7 @@ const DispatchRolls = () => {
           </div>
 
           <button
-            onClick={finalizeDispatch}
+            onClick={() => navigate("/dispatch/preview")}
             className="
               bg-green-600
               hover:bg-green-700
@@ -338,7 +342,7 @@ const DispatchRolls = () => {
               font-medium
             "
           >
-            Dispatch
+            Preview dispatch
           </button>
 
         </div>

@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+@media print {
+
+  @page {
+    size: A4 portrait;
+    margin: 5mm;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .dispatch-page {
+    width: 100%;
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .dispatch-page:last-child {
+    page-break-after: auto;
+  }
+
+  button {
+    display: none !important;
+  }
+
+}

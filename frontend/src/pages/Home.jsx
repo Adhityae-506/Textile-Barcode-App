@@ -63,7 +63,7 @@ function Home() {
 
   return (
     <DashboardLayout>
-      <div className="bg-slate-100 h-[calc(100vh-80px)] px-4 pt-2 pb-4 overflow-hidden flex flex-col gap-4">
+      <div className="bg-slate-100 h-[calc(100vh-80px)] px-4 pt-2 pb-4 flex flex-col gap-4">
 
         {/* Top Section */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
