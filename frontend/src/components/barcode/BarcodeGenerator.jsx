@@ -101,212 +101,509 @@ function BarcodeGenerator() {
 
   };
 
+  // return (
+
+  //   <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+
+  //     {/* Form Card */}
+  //     <div className="bg-white rounded-xl shadow p-8">
+  //       <h2
+  //         className="
+  //           text-2xl
+  //           font-bold
+  //           mb-2
+  //           text-blue-900
+  //         "
+  //       >
+  //         Add New Barcode
+  //       </h2>
+  //       <p className="text-sm font-normal mb-4 text-blue-500">
+  //         Fill in the details below to generated a new barcode.
+  //       </p>
+
+  //       <div
+  //         className="
+  //           grid
+  //           grid-cols-1
+  //           lg:grid-cols-5
+  //           gap-5
+  //           items-end
+  //         "
+  //       >
+
+  //         <div className="flex flex-col gap-2">
+
+  //           <label className="font-semibold">
+  //             Fabric Type <span className="text-red-500">*</span>
+  //           </label>
+
+  //           <select
+  //             value={fabric}
+  //             onChange={(e) =>
+  //               setFabric(
+  //                 Number(
+  //                   e.target.value
+  //                 )
+  //               )
+  //             }
+  //             className="
+  //               border
+  //               rounded-xl
+  //               px-4
+  //               py-3
+  //             "
+  //           >
+
+  //             <option value="">
+  //               Select Fabric
+  //             </option>
+
+  //             {fabrics.map(f => (
+
+  //               <option
+  //                 key={f.id}
+  //                 value={f.id}
+  //               >
+  //                 {f.type}
+  //               </option>
+
+  //             ))}
+
+  //           </select>
+
+  //         </div>
+
+  //         <div className="flex flex-col gap-2">
+
+  //           <label className="font-semibold">
+  //             Meters
+  //           </label>
+
+  //           <input
+  //             type="number"
+  //             placeholder="Meters"
+  //             className="
+  //               border
+  //               rounded-xl
+  //               px-4
+  //               py-3
+  //             "
+  //             onChange={(e) =>
+  //               setMeters(
+  //                 Number(
+  //                   e.target.value
+  //                 )
+  //               )
+  //             }
+  //           />
+
+  //         </div>
+
+  //         <div className="flex flex-col gap-2">
+
+  //           <label className="font-semibold">
+  //             Weight
+  //           </label>
+
+  //           <input
+  //             type="number"
+  //             placeholder="Weight"
+  //             className="
+  //               border
+  //               rounded-xl
+  //               px-4
+  //               py-3
+  //             "
+  //             onChange={(e) =>
+  //               setWeight(
+  //                 Number(
+  //                   e.target.value
+  //                 )
+  //               )
+  //             }
+  //           />
+
+  //         </div>
+
+  //         <div className="flex flex-col gap-2">
+
+  //           <label className="font-semibold">
+  //             Machine No
+  //           </label>
+
+  //           <input
+  //             type="number"
+  //             placeholder="Machine No"
+  //             className="
+  //               border
+  //               rounded-xl
+  //               px-4
+  //               py-3
+  //             "
+  //             onChange={(e) =>
+  //               setMachine(
+  //                 Number(
+  //                   e.target.value
+  //                 )
+  //               )
+  //             }
+  //           />
+
+  //         </div>
+
+  //       </div>
+
+  //       <div
+  //         className="
+  //           flex
+  //           justify-center
+  //           mt-10
+  //         "
+  //       >
+  //         <div>
+  //           <button
+  //             onClick={handleGenerate}
+  //             className="
+  //               w-full
+  //             bg-blue-900
+  //             text-white
+  //               py-3
+  //               rounded-xl
+  //               hover:bg-blue-950
+  //             "
+  //           >
+  //             Generate Barcode
+  //           </button>
+  //         </div>
+
+  //       </div>
+
+  //     </div>
+
+  //     <div
+  //       className="
+  //       border-t
+  //       border-dashed
+  //     border-slate-300
+  //       my-8
+  //       "
+  //     />
+
+  //     {/* Preview Section */}
+
+  //     <div
+  //       className="
+  //   flex
+  //   flex-col
+  //   lg:flex-row
+  //   items-center
+  //   gap-8
+  // "
+  //     >
+
+  //       <div className="flex-1 w-full">
+
+  //         <LabelledPreview
+  //           ref={printRef}
+  //           barcodeData={previewData}
+  //         />
+
+  //       </div>
+
+  //       <div
+  //         className="
+  //         flex
+  //         items-center
+  //         justify-center
+  //         min-w-[180px]
+  //         "
+  //       >
+
+  //         {previewData && (
+
+  //           <BarcodeActions
+  //             onPrint={handlePrint}
+  //           />
+
+  //         )}
+
+  //       </div>
+
+  //     </div>
+  //     <div
+  //       className="
+  //   border-t
+  //   border-dashed
+  //   border-slate-300
+  //   my-8
+  // "
+  //     />
+
+  //     {/* Generated Barcode Table */}
+
+  //     <BarcodeTable
+  //       onDelete={handleDelete}
+  //       onPrint={handleTablePrint}
+  //     />
+
+  //   </div>
+
+  // );
   return (
 
-    <div className="space-y-8">
+    <div
+      className="
+      bg-white
+      rounded-2xl
+      shadow-sm
+      border
+      border-slate-200
+      p-8
+    "
+    >
 
-      {/* Form Card */}
-      <div className="bg-white rounded-xl shadow p-8">
-        <h2
-          className="
-            text-2xl
-            font-bold
-            mb-2
-            text-blue-900
-          "
-        >
-          Add New Barcode
-        </h2>
-        <p className="text-sm font-normal mb-4 text-blue-500">
-          Fill in the details below to generated a new barcode.
-        </p>
+      {/* Header */}
 
-        <div
-          className="
-            grid
-            md:grid-cols-2
-            gap-8
-          "
-        >
+      <h2
+        className="
+        text-3xl
+        font-bold
+        text-blue-950
+        mb-8
+      "
+      >
+        Generate Barcode
+      </h2>
 
-          <div className="flex flex-col gap-2">
+      {/* Top Form Row */}
 
-            <label className="font-semibold">
-              Fabric Type <span className="text-red-500">*</span>
-            </label>
+      <div
+        className="
+        grid
+        grid-cols-1
+        lg:grid-cols-5
+        gap-5
+        items-end
+      "
+      >
 
-            <select
-              value={fabric}
-              onChange={(e) =>
-                setFabric(
-                  Number(
-                    e.target.value
-                  )
-                )
-              }
-              className="
-                border
-                rounded-xl
-                px-4
-                py-3
-              "
-            >
+        {/* Fabric */}
 
-              <option value="">
-                Select Fabric
-              </option>
+        <div>
 
-              {fabrics.map(f => (
-
-                <option
-                  key={f.id}
-                  value={f.id}
-                >
-                  {f.type}
-                </option>
-
-              ))}
-
-            </select>
-
-          </div>
-
-          <div className="flex flex-col gap-2">
-
-            <label className="font-semibold">
-              Meters
-            </label>
-
-            <input
-              type="number"
-              placeholder="Meters"
-              className="
-                border
-                rounded-xl
-                px-4
-                py-3
-              "
-              onChange={(e) =>
-                setMeters(
-                  Number(
-                    e.target.value
-                  )
-                )
-              }
-            />
-
-          </div>
-
-          <div className="flex flex-col gap-2">
-
-            <label className="font-semibold">
-              Weight
-            </label>
-
-            <input
-              type="number"
-              placeholder="Weight"
-              className="
-                border
-                rounded-xl
-                px-4
-                py-3
-              "
-              onChange={(e) =>
-                setWeight(
-                  Number(
-                    e.target.value
-                  )
-                )
-              }
-            />
-
-          </div>
-
-          <div className="flex flex-col gap-2">
-
-            <label className="font-semibold">
-              Machine No
-            </label>
-
-            <input
-              type="number"
-              placeholder="Machine No"
-              className="
-                border
-                rounded-xl
-                px-4
-                py-3
-              "
-              onChange={(e) =>
-                setMachine(
-                  Number(
-                    e.target.value
-                  )
-                )
-              }
-            />
-
-          </div>
-
-        </div>
-
-        <div
-          className="
-            flex
-            justify-center
-            mt-10
-          "
-        >
-
-          <button
-            onClick={handleGenerate}
+          <label
             className="
-              bg-blue-900
-              text-white
-              px-10
-              py-3
-              rounded-xl
-              hover:bg-blue-950
-            "
+            block
+            text-sm
+            text-slate-700
+            mb-2
+          "
           >
-            Generate Barcode
-          </button>
+            Select Fabric
+            <span className="text-red-500">
+              {" "}*
+            </span>
+          </label>
+
+          <select
+            value={fabric}
+            onChange={(e) =>
+              setFabric(Number(e.target.value))
+            }
+            className="
+            w-full
+            border
+            rounded-xl
+            px-4
+            py-3
+          "
+          >
+            <option value="">
+              Select Fabric
+            </option>
+
+            {fabrics.map(f => (
+              <option
+                key={f.id}
+                value={f.id}
+              >
+                {f.type}
+              </option>
+            ))}
+          </select>
 
         </div>
+
+        {/* Meters */}
+
+        <div>
+
+          <label
+            className="
+            block
+            text-sm
+            text-slate-700
+            mb-2
+          "
+          >
+            Quantity (Meters)
+          </label>
+
+          <input
+            type="number"
+            placeholder="500"
+            className="
+            w-full
+            border
+            rounded-xl
+            px-4
+            py-3
+          "
+            onChange={(e) =>
+              setMeters(Number(e.target.value))
+            }
+          />
+
+        </div>
+
+        {/* Weight */}
+
+        <div>
+
+          <label
+            className="
+            block
+            text-sm
+            text-slate-700
+            mb-2
+          "
+          >
+            Weight (Kg)
+          </label>
+
+          <input
+            type="number"
+            className="
+            w-full
+            border
+            rounded-xl
+            px-4
+            py-3
+          "
+            onChange={(e) =>
+              setWeight(Number(e.target.value))
+            }
+          />
+
+        </div>
+
+        {/* Machine */}
+
+        <div>
+
+          <label
+            className="
+            block
+            text-sm
+            text-slate-700
+            mb-2
+          "
+          >
+            Loom Number
+          </label>
+
+          <input
+            type="number"
+            className="
+            w-full
+            border
+            rounded-xl
+            px-4
+            py-3
+          "
+            onChange={(e) =>
+              setMachine(Number(e.target.value))
+            }
+          />
+
+        </div>
+
+        {/* Button */}
+
+        <button
+          onClick={handleGenerate}
+          className="
+          bg-blue-900
+          text-white
+          rounded-xl
+          py-3
+          font-semibold
+          hover:bg-blue-950
+        "
+        >
+          Generate Barcode
+        </button>
 
       </div>
 
+      {/* Divider */}
+
+      <div
+        className="
+        border-t
+        border-dashed
+        border-slate-300
+        my-8
+      "
+      />
+
       {/* Preview Section */}
 
-      <div>
+      <div
+        className="
+        flex
+        flex-col
+        lg:flex-row
+        gap-8
+        items-start
+      "
+      >
 
-        <h2
-          className="
-            text-xl
-            font-bold
-            mb-4
-          "
-        >
-          Barcode Preview
-        </h2>
+        <div className="flex-1">
 
-        <LabelledPreview
-          ref={printRef}
-          barcodeData={previewData}
-        />
+          <LabelledPreview
+            ref={printRef}
+            barcodeData={previewData}
+          />
+
+        </div>
 
         {previewData && (
 
-          <BarcodeActions
-            onPrint={handlePrint}
-          />
+          <div className="w-[180px]">
+
+            <BarcodeActions
+              onPrint={handlePrint}
+            />
+
+          </div>
 
         )}
 
       </div>
 
-      {/* Generated Barcode Table */}
+      {/* Divider */}
+
+      <div
+        className="
+        border-t
+        border-dashed
+        border-slate-300
+        my-8
+      "
+      />
+
+      {/* Table */}
 
       <BarcodeTable
         onDelete={handleDelete}

@@ -87,7 +87,7 @@ function BarcodeTable({
   return (
     <div className="mt-10">
 
-      <h2 className="text-xl font-bold mb-4">
+      <h2 className="text-2xl font-bold text-blue-900 mb-4">
         Generated Barcodes
       </h2>
 

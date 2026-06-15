@@ -12,14 +12,14 @@ const LabelledPreview = forwardRef(
           bg-white
           border
           rounded-xl
-          min-h-[280px]
+          shadow-md
+          min-h-[220px]
           flex
           items-center
           justify-center
           p-6
         "
-      >
-
+      >                               
         {!barcodeData ? (
 
           <div className="text-center">
