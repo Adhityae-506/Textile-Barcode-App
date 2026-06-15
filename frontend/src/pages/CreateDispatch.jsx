@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/layout/Navbar";
 import axios from "axios";
+import DashboardLayout from "./DashboardLayout";
 
 
 function CreateDispatch() {
@@ -85,11 +87,10 @@ function CreateDispatch() {
 
         navigate("/dispatch/scan");
     };
-
-    return (
-
+    
+    return (     
+        <DashboardLayout> 
         <div className="p-6">
-
             <h2 className="text-2xl mb-4">
                 Create Dispatch
             </h2>
@@ -201,7 +202,7 @@ function CreateDispatch() {
 
             </div>
 
-        </div>
+        </div></DashboardLayout> 
     );
 }
 
