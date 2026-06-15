@@ -27,16 +27,7 @@ function BarcodeGenerator() {
               .startsWith(search.toLowerCase())
   );
 
-
-
   const printRef = useRef();
-
-  const filteredFabrics = fabrics.filter(
-    fabric =>
-      fabric.type
-        .toLowerCase()
-        .includes(search.toLowerCase())
-  );
 
   useEffect(() => {
 
@@ -72,7 +63,7 @@ function BarcodeGenerator() {
       const res = await axios.post(
         "http://127.0.0.1:8000/api/barcode/",
         {
-          fabric_type: fabric,
+          fabric_type: selectedFabric.id,
           machine_no: machine,
           meters: meters,
           weight: weight
@@ -412,11 +403,11 @@ function BarcodeGenerator() {
 
           <label
             className="
-      block
-      text-sm
-      text-slate-700
-      mb-2
-    "
+              block
+              text-sm
+              text-slate-700
+              mb-2
+            "
           >
             Select Fabric
             <span className="text-red-500">
