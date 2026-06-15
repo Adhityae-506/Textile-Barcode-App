@@ -6,6 +6,7 @@ import Fabric from "../pages/Fabric";
 import Login from "../pages/login"
 import CreateDispatch from "../pages/CreateDispatch";
 import DispatchRolls from "../pages/DispatchRolls";
+import DispatchPreview from "../pages/DispatchPreview";
 
 function AppRouter() {
   return (
@@ -17,6 +18,7 @@ function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/dispatch" element={<CreateDispatch/>} />
         <Route path="/dispatch/scan" element={<DispatchRolls />} />
+        <Route path="/dispatch/preview" element={<DispatchPreview />} />
       </Routes>
     </BrowserRouter>
   );
