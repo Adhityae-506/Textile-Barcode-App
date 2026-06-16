@@ -12,6 +12,15 @@ const DispatchRolls = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const totalMeters = scannedRolls.reduce(
+    (sum, roll) => sum + Number(roll.meters),
+    0
+  );
+
+  const totalWeight = scannedRolls.reduce(
+    (sum, roll) => sum + Number(roll.weight),
+    0
+);
   const navigate = useNavigate();
 
 
@@ -327,6 +336,21 @@ const DispatchRolls = () => {
             Total Rolls :
             <span className="ml-2 text-blue-700">
               {scannedRolls.length}
+            </span>
+            <span className="ml-6">
+              Total MTRS :
+            </span>
+
+            <span className="ml-2 text-blue-700">
+              {totalMeters}
+            </span>
+
+            <span className="ml-6">
+              Total KG :
+            </span>
+
+            <span className="ml-2 text-blue-700">
+              {totalWeight}
             </span>
           </div>
 

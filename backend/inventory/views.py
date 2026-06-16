@@ -10,10 +10,9 @@ from django.db import transaction
 from django.db.models import Max, Sum, Q, F
 
 from .models import Fabric,Barcode,Roll, Dispatch
-from .serializer import FabricSerializer, RollSerializer, DispatchSerializer
-from django.db.models.functions import ExtractMonth
-from django.db.models.functions import TruncMonth
-from .utils import get_financial_year,create_dispatch
+from .serializer import FabricSerializer, RollSerializer, DispatchSerializer, DispatchRollSerializer
+from django.db.models.functions import TruncMonth, Greatest
+from .utils import create_dispatch
 
 from barcode import Code128
 from barcode.writer import ImageWriter
@@ -123,6 +122,23 @@ class RollViewSet(ModelViewSet):
                 {"message" : "Barcode created"},
                 status = status.HTTP_200_OK
             )
+    
+    def destroy(self, request, *args, **kwargs):
+
+        roll = self.get_object()
+
+        fabric = roll.fabric_type
+        meters = roll.meters
+
+        fabric.stock = max(0, fabric.stock - meters)
+        fabric.save()
+
+        roll.delete()
+
+        return Response(
+            {"message": "Roll deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT
+        )
     
     @action(detail=True, methods=["get"])
     def preview(self, request, pk=None):
@@ -493,7 +509,7 @@ class DispatchViewSet(ModelViewSet):
                 Fabric.objects.filter(
                     id=roll.fabric_type_id
                 ).update(
-                    stock=F('stock') - roll.meters
+                    stock=Greatest( F("stock") - roll.meters, 0 )
                 )
                 
                 roll.dispatch_status = "dispatched"
@@ -509,7 +525,55 @@ class DispatchViewSet(ModelViewSet):
                 "dispatch_no":
                 dispatch.dispatch_no
             })
-        
+
+
+    @action(
+        detail=True,
+        methods=["get"]
+    )
+    def dc(self, request, pk=None):
+
+        dispatch = self.get_object()
+
+        rolls = dispatch.rolls.all().order_by(
+            "roll_no"
+        )
+
+        rolls_data = DispatchRollSerializer(
+            rolls,
+            many=True
+        ).data
+
+        return Response({
+
+            "dispatch_no":
+                dispatch.dispatch_no,
+
+            "customer_name":
+                dispatch.customer_name,
+
+            "vehicle_no":
+                dispatch.vehicle_no,
+
+            "fabric_name":
+                dispatch.fabric_type.type,
+
+            "dispatched_at":
+                dispatch.dispatched_at,
+
+            "total_rolls":
+                dispatch.total_rolls,
+
+            "total_meters":
+                dispatch.total_meters,
+
+            "total_weight":
+                dispatch.total_weight,
+
+            "rolls":
+                rolls_data
+
+        })  
 
 
 class DashboardAPIView(APIView):
@@ -549,8 +613,6 @@ class DashboardAPIView(APIView):
         production_chart = []
 
         for fabric in top_fabrics:
-
-            
 
             dispatched = fabric.dispatched or 0
             remaining = fabric.remaining or 0

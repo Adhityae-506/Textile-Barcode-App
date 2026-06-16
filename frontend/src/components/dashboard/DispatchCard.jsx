@@ -51,7 +51,7 @@ const DispatchCard = () => {
       <>
         <div className="flex justify-between items-center mb-5">
 
-          <h2 className="text-2xl font-bold text-blue-700">
+          <h2 className="text-2xl font-bold text-slate-800">
             Recent Dispatch
           </h2>
 
