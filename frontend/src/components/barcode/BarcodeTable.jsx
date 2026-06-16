@@ -1,10 +1,11 @@
 import { Printer, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-function BarcodeTable({
+
+const BarcodeTable = ({
   onPrint,
   onDelete,
-}) {
+}) => {
   const [data, setData] = useState([]);
   const ITEMS_PER_PAGE = 3;
   const [currentPage, setCurrentPage] = useState(1);
