@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.db.models import Max
 from .models import Dispatch
+
 def get_financial_year():
 
     today = timezone.now()
@@ -18,7 +19,10 @@ def get_financial_year():
 def create_dispatch(
     customer_name,
     vehicle_no,
-    fabric_type_id
+    fabric_type_id,
+    total_meters,
+    total_weight,
+    total_rolls
 ):
 
     fy = get_financial_year()
@@ -45,5 +49,8 @@ def create_dispatch(
         fabric_type_id=fabric_type_id,
         financial_year=fy,
         sequence_no=next_seq,
-        dispatch_no=dispatch_no
+        dispatch_no=dispatch_no,
+        total_meters=total_meters,
+        total_weight=total_weight,
+        total_rolls=total_rolls,
     )

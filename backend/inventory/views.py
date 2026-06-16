@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from django.db import transaction
@@ -10,6 +11,8 @@ from django.db.models import Max, Sum, Q
 
 from .models import Fabric,Barcode,Roll, Dispatch
 from .serializer import FabricSerializer, RollSerializer, DispatchSerializer
+from django.db.models.functions import ExtractMonth
+from django.db.models.functions import TruncMonth
 from .utils import get_financial_year,create_dispatch
 
 from barcode import Code128
@@ -18,6 +21,8 @@ from io import BytesIO
 from django.http import HttpResponse
 from datetime import timedelta
 
+class DispatchPagination(PageNumberPagination): # Serve-side pagination done in Dispatch list section
+    page_size = 7
 
 class FabricViewSet(ModelViewSet):
     queryset = Fabric.objects.all()
@@ -137,7 +142,7 @@ class RollViewSet(ModelViewSet):
             content_type="image/png"
         )
     
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=["get"]) # Used in Barcode section to list out barcode
     def list_barcode(self, request):
 
         rolls = Roll.objects.filter(
@@ -159,26 +164,70 @@ class RollViewSet(ModelViewSet):
 class DispatchViewSet(ModelViewSet):
     queryset = Dispatch.objects.all()
     serializer_class = DispatchSerializer
+    pagination_class = DispatchPagination
 
-    def perform_create(self,serializer):
+    # Used to obtained filtered data using their month for dispatch list section
+    @action(
+        detail=False,
+        methods=["get"]
+    )
+    def by_month(self, request):
 
-        fy = get_financial_year()
+        month = request.GET.get("month")
+        queryset = Dispatch.objects.all()
+        if month:
+            queryset = queryset.filter(
+                dispatched_at__month=month
+            )
 
-        max_seq = Dispatch.objects.filter(
-            financial_year=fy
-        ).aggregate(
-            max_sequence=Max('sequence_no')
-        )['max_sequence']
-
-        next_seq = 1 if max_seq is None else max_seq + 1
-        
-        dispatch_no = f"{fy}{next_seq:04d}"
-
-        serializer.save(
-            financial_year=fy,
-            sequence_no=next_seq,
-            dispatch_no=dispatch_no
+        page = self.paginate_queryset(
+            queryset.order_by("-dispatched_at")
         )
+
+        serializer = DispatchSerializer(
+            page,
+            many=True
+        )
+
+        return self.get_paginated_response(
+            serializer.data
+        )
+
+    #USed to obtain the available financial months for filtering in the Dispatch list section (Data in the drop down box for month)
+    @action(
+        detail=False,
+        methods=["get"]
+    )
+    def available_months(self, request):
+
+        months = (
+            Dispatch.objects
+            .annotate(
+                month=TruncMonth("dispatched_at")
+            )
+            .values(
+                "month",
+                "financial_year"
+            )
+            .distinct()
+            .order_by("-month")
+        )   
+
+        data = []
+
+        for item in months:
+
+            data.append({
+                "month": item["month"].month,
+                "year": item["month"].year,
+                "financial_year": item["financial_year"],
+                "label": (
+                    f"{item['month'].strftime('%B %Y')} "
+                    f"(FY {item['financial_year']})"
+                )
+            })
+        return Response(data)
+
 
     @action( 
         detail=False,
@@ -227,11 +276,110 @@ class DispatchViewSet(ModelViewSet):
             "fabric_name": roll.fabric_type.type
         })
 
+
     @action(
         detail=False,
         methods=["post"]
     )
-    def finalize(self, request):
+    def preview(self, request):
+
+        barcodes = request.data.get(
+            "barcodes",
+            []
+        )
+
+        customer_name = request.data.get(
+            "customer_name"
+        )
+
+        vehicle_no = request.data.get(
+            "vehicle_no"
+        )
+
+        fabric_type_id = request.data.get(
+            "fabric_type"
+        )
+
+        rolls_data = []
+
+        total_meters = 0
+        total_weight = 0
+
+        for index, barcode_value in enumerate(barcodes, start=1):
+
+            try:
+
+                barcode = Barcode.objects.select_related(
+                    "roll",
+                    "roll__fabric_type"
+                ).get(
+                    barcode=barcode_value
+                )
+
+            except Barcode.DoesNotExist:
+
+                continue
+
+            roll = barcode.roll
+
+            rolls_data.append({
+
+                "sno": index,
+
+                "roll_no": roll.roll_no,
+
+                "machine_no": roll.machine_no,
+
+                "weight": roll.weight,
+
+                "meters": roll.meters,
+
+                "gram":
+                    round(
+                        roll.weight / roll.meters,
+                        3
+                    )
+                    if roll.meters else 0
+
+            })
+
+            total_meters += roll.meters
+            total_weight += roll.weight
+
+        fabric_name = ""
+
+        if fabric_type_id:
+
+            fabric = Fabric.objects.get(
+                id=fabric_type_id
+            )
+
+            fabric_name = fabric.type
+
+        return Response({
+
+            "customer_name": customer_name,
+
+            "vehicle_no": vehicle_no,
+
+            "fabric_name": fabric_name,
+
+            "total_rolls": len(rolls_data),
+
+            "total_meters": total_meters,
+
+            "total_weight": total_weight,
+
+            "rolls": rolls_data
+
+        })
+
+
+    @action(
+        detail=False,
+        methods=["post"]
+    )
+    def confirm_dispatch(self, request):
 
         customer_name = request.data.get(
             "customer_name"
@@ -250,6 +398,20 @@ class DispatchViewSet(ModelViewSet):
             []
         )
 
+        total_meters = request.data.get(
+            "total_meters",
+            0
+        )
+
+        total_weight = request.data.get(
+            "total_weight",
+            0
+        )
+
+        total_rolls = request.data.get(
+            "total_rolls",
+            0
+        )
         if not barcodes:
 
             return Response(
@@ -266,7 +428,10 @@ class DispatchViewSet(ModelViewSet):
             dispatch = create_dispatch(
                 customer_name,
                 vehicle_no,
-                fabric_type_id
+                fabric_type_id,
+                total_meters,
+                total_weight,
+                total_rolls
             )
 
             for barcode_value in barcodes:

@@ -8,7 +8,7 @@ function Navbar() {
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Dispatch", path: "/dispatch" },
-    { name: "Fabric", path: "/fabric" },
+    { name: "Stocks", path: "/stocks" },
     { name: "Barcodes", path: "/barcode" },
   ];
 

@@ -41,15 +41,25 @@ class RollSerializer(serializers.ModelSerializer):
 
 class DispatchSerializer(serializers.ModelSerializer):
 
+    fabric_name = serializers.CharField(
+        source="fabric_type.type",
+        read_only=True
+    )
+
     class Meta:
         model = Dispatch
 
         fields = [
             "id",
+            "dispatch_no",
             "customer_name",
             "vehicle_no",
             "dispatched_at",
-            "fabric_type"
+            "fabric_type",
+            "fabric_name",
+            "total_rolls",
+            "total_meters",
+            "total_weight"
         ]
 
         read_only_fields = [

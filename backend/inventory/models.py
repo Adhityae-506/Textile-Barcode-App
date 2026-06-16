@@ -28,6 +28,17 @@ class Dispatch(models.Model):
         blank=True,
         null=True
     )
+    total_meters = models.IntegerField(
+        default=0
+    )
+
+    total_weight = models.IntegerField(
+        default=0
+    )
+
+    total_rolls = models.IntegerField(
+        default=0
+    )
     customer_name = models.CharField(max_length = 100)
     vehicle_no = models.CharField(max_length = 30)
     dispatched_at = models.DateTimeField(auto_now_add= True)
