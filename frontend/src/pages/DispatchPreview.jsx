@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function DispatchPreview() {
+    
+  const navigate = useNavigate();
+
   const [dispatch, setDispatch] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+
     const dispatchData = JSON.parse(
       localStorage.getItem("dispatch")
     );
@@ -39,6 +45,62 @@ function DispatchPreview() {
   if (!dispatch) {
     return <p>Loading...</p>;
   }
+
+  const handleConfirmDispatch = async () => {
+
+  try {
+
+    setLoading(true);
+    const dispatchData = JSON.parse(
+      localStorage.getItem("dispatch")
+    );
+
+    const rolls = JSON.parse(
+      localStorage.getItem("dispatch_rolls")
+    ) || [];
+
+    const res = await axios.post(
+      "http://127.0.0.1:8000/api/dispatch/confirm_dispatch/",
+      {
+        customer_name:
+          dispatchData.customer_name,
+
+        vehicle_no:
+          dispatchData.vehicle_no,
+
+        fabric_type:
+          dispatchData.fabric_type,
+
+        barcodes: rolls.map(
+          roll => roll.barcode
+        ),
+        total_meters: dispatch.total_meters,
+        total_weight: dispatch.total_weight,
+        total_rolls: dispatch.total_rolls,
+      }
+    );
+
+    alert(
+      `Dispatch ${res.data.dispatch_no} created successfully`
+    );
+
+    localStorage.removeItem("dispatch");
+    localStorage.removeItem("dispatch_rolls");
+
+    navigate("/");
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert(
+        "Failed to create dispatch"
+        );
+
+    } finally {
+        setLoading(false);
+    }
+    };
 
   const rolls = dispatch.rolls || [];
 
@@ -300,13 +362,13 @@ function DispatchPreview() {
                             <div className="text-md">
                             <b>Grand Total Meters :</b>
                             {" "}
-                            {dispatch.total_weight}
+                            {dispatch.total_meters}
                             </div>
 
                             <div className="text-md">
                             <b>Grand Total Weight :</b>
                             {" "}
-                            {dispatch.total_meters.toFixed(2)}
+                            {dispatch.total_weight.toFixed(2)}
                             </div>
 
                         </div>
@@ -337,6 +399,20 @@ function DispatchPreview() {
           "
         >
           Print
+        </button>
+
+        <button
+            onClick={handleConfirmDispatch}
+            disabled={loading}
+            className="
+            bg-green-600
+            text-white
+            px-6
+            py-2
+            rounded
+            "
+        >
+            Confirm Dispatch
         </button>
       </div>
     </>
