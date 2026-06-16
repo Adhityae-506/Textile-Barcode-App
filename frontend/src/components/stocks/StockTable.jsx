@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Search,
   ChevronLeft,
@@ -7,29 +9,71 @@ import {
 
 const StockTable = () => {
 
-  const dummyData = [
-    {
-      id: 1,
-      type: "Cotton 40-40",
-      stock: 2000,
-      updated: "21/06/2028",
-    },
-    {
-      id: 2,
-      type: "Polyester 75D",
-      stock: 1200,
-      updated: "20/06/2028",
-    },
-    
-  ];
+  const [data,setData] = useState([]);
+  const navigate = useNavigate();
 
-  // const [data, setData] = useState([]);
-  // const ITEMS_PER_PAGE = 3;
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
-  // const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  // const endIndex = startIndex + ITEMS_PER_PAGE;
-  // const currentItems = data.slice(startIndex, endIndex);
+  useEffect(() => {
+
+    axios
+      .get(
+        "http://127.0.0.1:8000/api/fabrics/"
+      )
+      .then((res) => {
+
+        setData(res.data)
+
+      });
+
+  }, []);
+
+  {/*Number of records in one page */}
+  const ITEMS_PER_PAGE = 7;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentItems = data.slice(startIndex, endIndex);
+
+  {/*Visible page slider*/}
+  const MAX_VISIBLE_PAGES = 3;
+
+  const currentGroup = Math.floor(
+    (currentPage - 1) / MAX_VISIBLE_PAGES
+  );
+  const startPage =
+    currentGroup * MAX_VISIBLE_PAGES + 1;
+  const endPage = Math.min(
+    startPage + MAX_VISIBLE_PAGES - 1,
+    totalPages
+  );
+  const visiblePages = [];
+
+  for (
+    let page = startPage;
+    page <= endPage;
+    page++
+  ) {
+    visiblePages.push(page);
+  }
+
+
+  {/*Next buttonn click in page slider*/}
+  const goNextGroup = () => {
+  const nextPage = startPage + MAX_VISIBLE_PAGES;
+
+    if (nextPage <= totalPages) {
+      setCurrentPage(nextPage);
+    }
+  };
+
+  const goPrevGroup = () => {
+    const prevPage = startPage - MAX_VISIBLE_PAGES;
+
+    if (prevPage >= 1) {
+      setCurrentPage(prevPage);
+    }
+  };
+
 
   return (
     <div
@@ -43,38 +87,51 @@ const StockTable = () => {
       "
     >
       {/* Search */}
+      <div className="flex items-center justify-between">
+        <div className="mb-6 relative">
+          <Search
+            size={18}
+            className="
+              absolute
+              left-4
+              top-4
+              text-slate-400
+            "
+          />
+          <input
+            placeholder="Search fabric..."
+            className="
+              border
+              rounded-xl
+              pl-12
+              py-3
+              w-full
+              lg:w-[450px]
+            "
+          />
+        </div>
 
-      <div className="mb-6 relative">
-
-        <Search
-          size={18}
+        <button
+          onClick = {() => navigate("/fabric")}
           className="
-            absolute
-            left-4
-            top-4
-            text-slate-400
+              bg-blue-700
+              text-white
+              px-6 py-3
+              rounded-xl
+              hover:bg-blue-800
+              transition
           "
-        />
-
-        <input
-          placeholder="Search fabric..."
-          className="
-            border
-            rounded-xl
-            pl-12
-            py-3
-            w-full
-            lg:w-[450px]
-          "
-        />
+        >
+          + Create Fabric
+        </button>
 
       </div>
 
       {/* Table */}
 
-      <div className="overflow-hidden rounded-xl border">
+      <div className="overflow-hidden rounded-xl">
 
-        <table className="w-full">
+        <table className="w-full border">
 
           <thead>
 
@@ -101,7 +158,24 @@ const StockTable = () => {
 
           <tbody>
 
-            {dummyData.map(item => (
+             {data.length === 0 ? (
+
+              <tr>
+
+                <td
+                  colSpan="5"
+                  className="
+                    text-center
+                    py-10
+                    text-slate-500
+                  "
+                >
+                  No barcodes generated yet
+                </td>
+
+              </tr>
+
+            ) : (currentItems.map(item => (
 
               <tr
                 key={item.id}
@@ -120,14 +194,15 @@ const StockTable = () => {
                 </td>
               </tr>
 
-            ))}
+            ))
+          )}
 
           </tbody>
 
         </table>
-        {/* {data.length > 0 && (
+         {data.length > 0 && (
 
-          <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center justify-between mt-6 px-5 pb-3">
             <p className="text-slate-600">
               showing{" "}
 
@@ -184,7 +259,7 @@ const StockTable = () => {
 
             </div>
           </div>
-        )} */}
+        )} 
       </div>
 
     </div>

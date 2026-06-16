@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from django.db import transaction
-from django.db.models import Max, Sum, Q
+from django.db.models import Max, Sum, Q, F
 
 from .models import Fabric,Barcode,Roll, Dispatch
 from .serializer import FabricSerializer, RollSerializer, DispatchSerializer
@@ -113,6 +113,12 @@ class RollViewSet(ModelViewSet):
             barcode=f"ST{roll_no}"
         )
 
+        Fabric.objects.filter(
+                id=roll_obj.fabric_type_id
+        ).update(
+                stock=F('stock') + roll_obj.meters
+        )
+        
         return Response(
                 {"message" : "Barcode created"},
                 status = status.HTTP_200_OK
@@ -165,6 +171,20 @@ class DispatchViewSet(ModelViewSet):
     queryset = Dispatch.objects.all()
     serializer_class = DispatchSerializer
     pagination_class = DispatchPagination
+
+
+    @action(
+        detail=False,
+        methods=["get"]
+    )
+    def recent_dispatch(self,request):
+
+        queryset = Dispatch.objects.order_by(
+            "-dispatched_at"
+        )[:5]
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     # Used to obtained filtered data using their month for dispatch list section
     @action(
@@ -470,6 +490,12 @@ class DispatchViewSet(ModelViewSet):
                         f"{roll.roll_no} already dispatched"
                     )
 
+                Fabric.objects.filter(
+                    id=roll.fabric_type_id
+                ).update(
+                    stock=F('stock') - roll.meters
+                )
+                
                 roll.dispatch_status = "dispatched"
                 roll.dispatched = dispatch
 

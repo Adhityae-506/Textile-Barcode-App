@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Barcode from "../pages/Barcode";
-// import Fabric from "../pages/Fabric";
+import Fabric from "../pages/Fabric";
 import Login from "../pages/login"
 import Dispatch from "../pages/Dispatch";
 import CreateDispatch from "../pages/CreateDispatch";
@@ -17,6 +17,7 @@ function AppRouter() {
         <Route path="/" element={<Home />} />
         <Route path="/barcode" element={<Barcode />} />
         <Route path="/stocks" element={<Stocks />} />
+        <Route path="/fabric" element={<Fabric />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dispatch" element={<Dispatch />} />
         <Route path="/dispatch-list" element={<CreateDispatch/>} />
