@@ -172,12 +172,63 @@ const DispatchRolls = () => {
 
       <div className="bg-white rounded-3xl shadow-md p-6">
 
-        <h2 className="text-3xl font-bold text-blue-700 mb-8">
+        <h2 className="text-3xl font-bold text-blue-900 mb-8">
           Scan Dispatch Rolls
         </h2>
 
-        {/* Dispatch Info */}
+        {/* Stepper */}
+        <div className="flex items-start justify-center mb-12">
 
+          <div className="relative flex items-center">
+
+            {/* Step 1 */}
+            <div className="flex flex-col items-center z-10">
+              <div className="w-10 h-10 rounded-full bg-slate-100  flex items-center justify-center font-bold">
+                1
+              </div>
+              <span className="mt-3 text-sm font-semibold">
+                Dispatch Info
+              </span>
+            </div>
+
+            <div className="w-96 h-[3px] bg-gradient-to-r from-slate-300 to-blue-800 mb-8"></div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col items-center z-10">
+              <div className="w-14 h-14 rounded-full  bg-blue-800 text-lg text-white text-slate-700 flex items-center justify-center font-bold">
+                2
+              </div>
+              <span className="mt-3 text-sm text-slate-500">
+                Dispatch Scan
+              </span>
+            </div>
+
+            <div className="w-96 h-[3px] bg-gradient-to-r from-blue-800 to-slate-300 mb-8"></div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col items-center z-10">
+              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                3
+              </div>
+              <span className="mt-3 text-sm text-slate-500">
+                Review & Confirm
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+        
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-blue-900 mb-2">
+          Fabric Details
+        </h2>
+
+        <div className="border-b border-dashed border-slate-300 mb-6"></div>
+        
+        
+        {/* Dispatch Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 
           <div className="bg-slate-50 p-4 rounded-xl">
@@ -206,7 +257,7 @@ const DispatchRolls = () => {
             </p>
 
             <p className="font-semibold">
-              {dispatchInfo.fabric_type}
+              {dispatchInfo.fabric_name}
             </p>
           </div>
 

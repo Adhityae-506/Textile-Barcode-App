@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import axios from "axios";
 import DashboardLayout from "./DashboardLayout";
+import {
+  Truck,
+  Building2,
+  Package,
+} from "lucide-react";
 
 
 function CreateDispatch() {
@@ -78,7 +83,8 @@ function CreateDispatch() {
             JSON.stringify({
                 customer_name: customerName,
                 vehicle_no: vehicleNo,
-                fabric_type: selectedFabric.id
+                fabric_type: selectedFabric.id,
+                fabric_name: selectedFabric.type,
             })
         );
 
@@ -95,11 +101,61 @@ function CreateDispatch() {
 
       <div className="bg-white rounded-3xl shadow-md p-8 h-full">
 
-        <h2 className="text-3xl font-bold text-blue-700 mb-10">
+        <h1 className="text-2xl font-bold text-blue-900 mb-10">
           Create New Dispatch
+        </h1>
+
+        {/* Stepper */}
+        <div className="flex items-start justify-center mb-12">
+
+          <div className="relative flex items-center">
+
+            {/* Step 1 */}
+            <div className="flex flex-col items-center z-10">
+              <div className="w-14 h-14 rounded-full bg-blue-800 text-xl text-white flex items-center justify-center font-bold">
+                1
+              </div>
+              <span className="mt-3 text-sm font-semibold">
+                Dispatch Info
+              </span>
+            </div>
+
+            <div className="w-96 h-[3px] bg-blue-800  mb-8"></div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col items-center z-10">
+              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                2
+              </div>
+              <span className="mt-3 text-sm text-slate-500">
+                Dispatch Scan
+              </span>
+            </div>
+
+            <div className="w-96 h-[3px] bg-slate-300  mb-8"></div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col items-center z-10">
+              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                3
+              </div>
+              <span className="mt-3 text-sm text-slate-500">
+                Review & Confirm
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+        
+        {/* Heading */}
+        <h2 className="text-2xl font-bold text-blue-900 mb-4">
+          Dispatch Information
         </h2>
 
-        <div className="flex flex-col gap-10">
+        <div className="border-b border-dashed border-slate-300 mb-10"></div>
+
+        <div className="flex flex-col gap-12 px-5">
 
           {/* Vehicle Number */}
 
@@ -114,19 +170,23 @@ function CreateDispatch() {
                 flex
                 items-center
                 justify-center
-                text-3xl
               "
             >
-              🚚
+              <Truck
+                size={40}
+                className="text-blue-900"
+                strokeWidth={2.2}
+              />
             </div>
 
             <div className="flex-1">
-              <label className="text-sm text-slate-500">
+              <label className="block text-sm mb-2 text-slate-600">
                 Vehicle Number
               </label>
 
               <input
                 value={vehicleNo}
+                placeholder="Vehicle no"
                 onChange={(e) =>
                   setVehicleNo(e.target.value)
                 }
@@ -161,19 +221,23 @@ function CreateDispatch() {
                 flex
                 items-center
                 justify-center
-                text-3xl
               "
             >
-              🏢
+              <Building2
+                size={40}
+                className="text-blue-900"
+                strokeWidth={2.2}
+              />
             </div>
 
             <div className="flex-1">
-              <label className="text-sm text-slate-500">
+              <label className="block text-sm mb-2 text-slate-600">
                 Company Name
               </label>
 
               <input
                 value={customerName}
+                placeholder="Company"
                 onChange={(e) =>
                   setCustomerName(e.target.value)
                 }
@@ -197,7 +261,7 @@ function CreateDispatch() {
 
           {/* Fabric Selection */}
 
-          <div className="flex items-start gap-6">
+          <div className="flex items-center gap-6">
 
             <div
               className="
@@ -208,15 +272,18 @@ function CreateDispatch() {
                 flex
                 items-center
                 justify-center
-                text-3xl
               "
             >
-              🧵
+              <Package
+                size={40}
+                className="text-blue-900"
+                strokeWidth={2.2}
+              />
             </div>
 
             <div className="flex-1 relative">
 
-              <label className="text-sm text-slate-500">
+              <label className="block text-sm mb-2 text-slate-600">
                 Fabric Type
               </label>
 
@@ -251,7 +318,7 @@ function CreateDispatch() {
                   <div
                     className="
                       absolute
-                      top-20
+                      top-full
                       left-0
                       right-0
                       bg-white
