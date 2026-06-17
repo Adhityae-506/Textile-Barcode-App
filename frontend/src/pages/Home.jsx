@@ -38,11 +38,11 @@ function Home() {
 
         {/* Production Chart */}
 
-        <div className="bg-white rounded-3xl p-5 shadow-md flex-1 overflow-hidden">
+        <div className="bg-white rounded-3xl p-5 shadow-md flex-1">
 
           <div className="flex flex-col justify-between h-full ">
             
-            <div>
+            <div className="mb-8">
               <h2 className="text-2xl font-bold text-slate-800 ">
                 Running Production
               </h2>
@@ -50,7 +50,7 @@ function Home() {
             </div>
             
 
-            <div className="flex ">
+            <div className="flex h-[440px] ">
               <ProductionBarChart />
             </div>
 

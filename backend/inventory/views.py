@@ -607,6 +607,10 @@ class DashboardAPIView(APIView):
                 )
 
             )
+            .exclude(
+                Q(dispatched__isnull=True) &
+                Q(remaining__isnull=True)
+            )
             .order_by("-remaining")[:10]
         )
 
@@ -616,6 +620,9 @@ class DashboardAPIView(APIView):
 
             dispatched = fabric.dispatched or 0
             remaining = fabric.remaining or 0
+
+            if dispatched == 0 and remaining == 0:
+                continue
 
             production_chart.append({
 

@@ -15,7 +15,49 @@ const DispatchCard = () => {
       });
   }, []);
 
+  if (dispatches.length === 0) {
+    return (
+      <>
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-2xl font-bold text-slate-800">
+            Recent Dispatch
+          </h2>
+
+          <span className="text-sm text-slate-500">
+            Auto Updated
+          </span>
+        </div>
+
+        <div className="
+          h-[280px]
+          flex
+          items-center
+          justify-center
+          rounded-xl
+          border
+          border-dashed
+          border-slate-300
+          bg-slate-50
+        ">
+          <div className="text-center">
+            <p className="text-5xl mb-3">📦</p>
+
+            <p className="text-lg font-semibold text-slate-700">
+              No Recent Dispatches Yet
+            </p>
+
+            <p className="text-sm text-slate-500 mt-1">
+              Dispatches will appear here once created
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   const current = dispatches[currentIndex];
+
+
   const icon = [
       {
         emoji: "🧵",
@@ -128,7 +170,7 @@ const DispatchCard = () => {
             <div className="ml-10 p-10 flex flex-col items-center bg-amber-100 rounded-xl ">
 
               <div className="text-8xl">
-                {icon[currentIndex].emoji}
+                {icon[currentIndex % icon.length].emoji}
               </div>
 
               <div className="mt-3 text-center">
