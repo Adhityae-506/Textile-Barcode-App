@@ -35,6 +35,64 @@ function StockPieChart() {
     0
   );
 
+  {/*If no fabric created data will be empty */}
+  if (data.length === 0) {
+    return (
+      <div className="
+        h-full
+        flex
+        items-center
+        justify-center
+        rounded-xl
+        border
+        border-dashed
+        border-slate-300
+        bg-slate-50
+      ">
+        <div className="text-center">
+          <p className="text-5xl mb-3">📊</p>
+
+          <p className="text-lg font-semibold text-slate-700">
+            No Stock Available
+          </p>
+
+          <p className="text-sm text-slate-500 mt-1">
+            Fabric stock distribution will appear here
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+    {/*If fabrics are available but no stocks*/}
+    if (total === 0) {
+      return (
+        <div className="
+          h-full
+          flex
+          items-center
+          justify-center
+          rounded-xl
+          border
+          border-dashed
+          border-slate-300
+          bg-slate-50
+        ">
+          <div className="text-center">
+            <p className="text-5xl mb-3">🧶</p>
+
+            <p className="text-lg font-semibold text-slate-700">
+              No Stock Available
+            </p>
+
+            <p className="text-sm text-slate-500 mt-1">
+              All fabric stocks are currently zero
+            </p>
+          </div>
+        </div>
+      );
+    }
+
 
   return (
     <div className="flex items-center justify-between w-full h-full px-4">

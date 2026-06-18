@@ -65,3 +65,34 @@ class DispatchSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "dispatch_no"
         ]
+
+    
+    
+class DispatchRollSerializer(
+    serializers.ModelSerializer
+):
+
+    gram = serializers.SerializerMethodField()
+
+    class Meta:
+
+        model = Roll
+
+        fields = [
+            "roll_no",
+            "machine_no",
+            "weight",
+            "meters",
+            "gram"
+        ]
+
+    def get_gram(self, obj):
+
+        if obj.meters:
+
+            return round(
+                obj.weight / obj.meters,
+                3
+            )
+
+        return 0

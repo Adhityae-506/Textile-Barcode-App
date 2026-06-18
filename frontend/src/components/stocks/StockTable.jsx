@@ -26,13 +26,20 @@ const StockTable = () => {
 
   }, []);
 
+  const [search, setSearch] = useState("");
+  const filteredData = data.filter((fabric) =>
+    fabric.type
+      .toLowerCase()
+      .startsWith(search.toLowerCase())
+  );
+
   {/*Number of records in one page */}
   const ITEMS_PER_PAGE = 7;
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentItems = data.slice(startIndex, endIndex);
+  const currentItems = filteredData.slice(startIndex, endIndex);
 
   {/*Visible page slider*/}
   const MAX_VISIBLE_PAGES = 3;
@@ -99,6 +106,10 @@ const StockTable = () => {
             "
           />
           <input
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
             placeholder="Search fabric..."
             className="
               border
@@ -210,11 +221,11 @@ const StockTable = () => {
 
               {" "}to{" "}
 
-              {Math.min(endIndex, data.length)}
+              {Math.min(endIndex, filteredData.length)}
 
               {" "}of{" "}
 
-              {data.length}
+              {filteredData.length}
 
               {" "} items
             </p>

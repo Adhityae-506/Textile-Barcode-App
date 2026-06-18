@@ -24,7 +24,7 @@ function Home() {
           {/* Stocks */}
           <div className="bg-white rounded-3xl p-5 shadow-md">
 
-            <h2 className="text-2xl font-bold text-blue-700 mb-4">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">
               Stocks Overview
             </h2>
 
@@ -38,15 +38,19 @@ function Home() {
 
         {/* Production Chart */}
 
-        <div className="bg-white rounded-3xl p-5 shadow-md flex-1 overflow-hidden">
+        <div className="bg-white rounded-3xl p-5 shadow-md flex-1">
 
           <div className="flex flex-col justify-between h-full ">
+            
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-slate-800 ">
+                Running Production
+              </h2>
+              <span className="text-sm text-slate-500 mx-5 italic">Previous 30 days Production</span>
+            </div>
+            
 
-            <h2 className="text-2xl font-bold text-slate-800 mb-4">
-              Running Production
-            </h2>
-
-            <div className="flex ">
+            <div className="flex h-[440px] ">
               <ProductionBarChart />
             </div>
 

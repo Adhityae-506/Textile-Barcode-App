@@ -195,6 +195,11 @@ function Dispatch() {
                     <td className="p-4 text-center">
 
                       <button
+                      onClick={() =>
+                        navigate(
+                          `/dispatch/${dispatch.id}`
+                        )
+                      }
                         className="
                           bg-blue-700
                           text-white

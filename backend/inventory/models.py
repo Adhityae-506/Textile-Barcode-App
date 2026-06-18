@@ -32,7 +32,9 @@ class Dispatch(models.Model):
         default=0
     )
 
-    total_weight = models.IntegerField(
+    total_weight = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
         default=0
     )
 
@@ -67,7 +69,10 @@ class Roll(models.Model):
     )
     machine_no = models.IntegerField()
     meters = models.IntegerField()
-    weight = models.IntegerField()
+    weight = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
     date = models.DateField(auto_now_add=True)
     dispatch_status = models.CharField( max_length = 15,
             default = 'not_dispatched',
