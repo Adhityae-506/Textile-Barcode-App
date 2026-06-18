@@ -155,7 +155,7 @@ STATICFILES_STORAGE = (
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "https://textile-barcode-app.vercel.app",
 ]
 
 #Cache
