@@ -27,54 +27,16 @@ function AppRouter() {
         />
 
         {/* Protected Routes */}
-
         <Route element={<ProtectedRoute />}>
-
-          <Route
-            path="/"
-            element={<Home />}
-          />
-
-          <Route
-            path="/barcode"
-            element={<Barcode />}
-          />
-
-          <Route
-            path="/stocks"
-            element={<Stocks />}
-          />
-
-          <Route
-            path="/fabric"
-            element={<Fabric />}
-          />
-
-          <Route
-            path="/dispatch"
-            element={<Dispatch />}
-          />
-
-          <Route
-            path="/dispatch-list"
-            element={<CreateDispatch />}
-          />
-
-          <Route
-            path="/dispatch/scan"
-            element={<DispatchRolls />}
-          />
-
-          <Route
-            path="/dispatch/preview"
-            element={<DispatchPreview />}
-          />
-
-          <Route
-            path="/dispatch/:id"
-            element={<DispatchDC />}
-          />
-
+          <Route path="/" element={<Home />} />
+          <Route path="/barcode" element={<Barcode />} />
+          <Route path="/stocks" element={<Stocks />} />
+          <Route path="/fabric" element={<Fabric />} />
+          <Route path="/dispatch" element={<Dispatch />} />
+          <Route path="/dispatch-list" element={<CreateDispatch />} />
+          <Route path="/dispatch/scan" element={<DispatchRolls />} />
+          <Route path="/dispatch/preview" element={<DispatchPreview />} />
+          <Route path="/dispatch/:id" element={<DispatchDC />} />
         </Route>
 
       </Routes>

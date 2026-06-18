@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.views import APIView
@@ -7,8 +6,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate, login
 from django.db import transaction
 from django.db.models import Max, Sum, Q, F
 
@@ -20,13 +19,13 @@ from .utils import create_dispatch,clear_stock_caches
 from barcode import Code128
 from barcode.writer import ImageWriter
 from io import BytesIO
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse
 from datetime import timedelta
 
 from django.core.cache import cache
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def auth_check(request):
 
     return Response({
@@ -62,9 +61,12 @@ def login_view(request):
 
 #Logout
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def logout_view(request):
 
-    logout(request)
+    refresh_token = request.data["refresh"]
+    token = RefreshToken(refresh_token)
+    token.blacklist()
 
     return Response({
         "message": "Logged out"

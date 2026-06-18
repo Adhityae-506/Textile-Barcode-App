@@ -23,7 +23,6 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
-    console.log("LOGIN BUTTON CLICKED");
 
     let newErrors = {};
 
@@ -68,11 +67,9 @@ const Login = () => {
       navigate("/");
 
     } catch (err) {
-
-      console.error(err);
-
+      
       alert(
-        err.response?.data?.error ||
+        err.response?.data?.detail ||
         "Login Failed"
       );
 

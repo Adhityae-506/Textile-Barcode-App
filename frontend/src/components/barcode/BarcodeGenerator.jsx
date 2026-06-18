@@ -5,6 +5,7 @@ import api from "../../services/api";
 import LabelledPreview from "./LabelledPreview";
 import BarcodeActions from "./BarcodeActions";
 import BarcodeTable from "./BarcodeTable";
+import EditBarcode from "./EditBarcode";
 
 
 function BarcodeGenerator() {
@@ -19,6 +20,10 @@ function BarcodeGenerator() {
   const [search, setSearch] = useState("");
   const [selectedFabric, setSelectedFabric] = useState(null);
   const [showSuggestions, setShowSuggestions] = useState(false)
+
+  {/*Edit barcode*/}
+  const [editOpen,setEditOpen] = useState(false);
+  const [editingBarcode,setEditingBarcode] = useState(null);
 
   const filteredFabrics = fabrics.filter(
       fabric =>
@@ -112,254 +117,18 @@ function BarcodeGenerator() {
 
   };
 
-  // return (
+  const handleEdit = (barcode) => {
 
-  //   <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+    setEditingBarcode(barcode);
+    setEditOpen(true);
 
-  //     {/* Form Card */}
-  //     <div className="bg-white rounded-xl shadow p-8">
-  //       <h2
-  //         className="
-  //           text-2xl
-  //           font-bold
-  //           mb-2
-  //           text-blue-900
-  //         "
-  //       >
-  //         Add New Barcode
-  //       </h2>
-  //       <p className="text-sm font-normal mb-4 text-blue-500">
-  //         Fill in the details below to generated a new barcode.
-  //       </p>
+  };
 
-  //       <div
-  //         className="
-  //           grid
-  //           grid-cols-1
-  //           lg:grid-cols-5
-  //           gap-5
-  //           items-end
-  //         "
-  //       >
+  const handleUpdated = (updatedBarcode) => {
 
-  //         <div className="flex flex-col gap-2">
+    setPreviewData(updatedBarcode);
+  };
 
-  //           <label className="font-semibold">
-  //             Fabric Type <span className="text-red-500">*</span>
-  //           </label>
-
-  //           <select
-  //             value={fabric}
-  //             onChange={(e) =>
-  //               setFabric(
-  //                 Number(
-  //                   e.target.value
-  //                 )
-  //               )
-  //             }
-  //             className="
-  //               border
-  //               rounded-xl
-  //               px-4
-  //               py-3
-  //             "
-  //           >
-
-  //             <option value="">
-  //               Select Fabric
-  //             </option>
-
-  //             {fabrics.map(f => (
-
-  //               <option
-  //                 key={f.id}
-  //                 value={f.id}
-  //               >
-  //                 {f.type}
-  //               </option>
-
-  //             ))}
-
-  //           </select>
-
-  //         </div>
-
-  //         <div className="flex flex-col gap-2">
-
-  //           <label className="font-semibold">
-  //             Meters
-  //           </label>
-
-  //           <input
-  //             type="number"
-  //             placeholder="Meters"
-  //             className="
-  //               border
-  //               rounded-xl
-  //               px-4
-  //               py-3
-  //             "
-  //             onChange={(e) =>
-  //               setMeters(
-  //                 Number(
-  //                   e.target.value
-  //                 )
-  //               )
-  //             }
-  //           />
-
-  //         </div>
-
-  //         <div className="flex flex-col gap-2">
-
-  //           <label className="font-semibold">
-  //             Weight
-  //           </label>
-
-  //           <input
-  //             type="number"
-  //             placeholder="Weight"
-  //             className="
-  //               border
-  //               rounded-xl
-  //               px-4
-  //               py-3
-  //             "
-  //             onChange={(e) =>
-  //               setWeight(
-  //                 Number(
-  //                   e.target.value
-  //                 )
-  //               )
-  //             }
-  //           />
-
-  //         </div>
-
-  //         <div className="flex flex-col gap-2">
-
-  //           <label className="font-semibold">
-  //             Machine No
-  //           </label>
-
-  //           <input
-  //             type="number"
-  //             placeholder="Machine No"
-  //             className="
-  //               border
-  //               rounded-xl
-  //               px-4
-  //               py-3
-  //             "
-  //             onChange={(e) =>
-  //               setMachine(
-  //                 Number(
-  //                   e.target.value
-  //                 )
-  //               )
-  //             }
-  //           />
-
-  //         </div>
-
-  //       </div>
-
-  //       <div
-  //         className="
-  //           flex
-  //           justify-center
-  //           mt-10
-  //         "
-  //       >
-  //         <div>
-  //           <button
-  //             onClick={handleGenerate}
-  //             className="
-  //               w-full
-  //             bg-blue-900
-  //             text-white
-  //               py-3
-  //               rounded-xl
-  //               hover:bg-blue-950
-  //             "
-  //           >
-  //             Generate Barcode
-  //           </button>
-  //         </div>
-
-  //       </div>
-
-  //     </div>
-
-  //     <div
-  //       className="
-  //       border-t
-  //       border-dashed
-  //     border-slate-300
-  //       my-8
-  //       "
-  //     />
-
-  //     {/* Preview Section */}
-
-  //     <div
-  //       className="
-  //   flex
-  //   flex-col
-  //   lg:flex-row
-  //   items-center
-  //   gap-8
-  // "
-  //     >
-
-  //       <div className="flex-1 w-full">
-
-  //         <LabelledPreview
-  //           ref={printRef}
-  //           barcodeData={previewData}
-  //         />
-
-  //       </div>
-
-  //       <div
-  //         className="
-  //         flex
-  //         items-center
-  //         justify-center
-  //         min-w-[180px]
-  //         "
-  //       >
-
-  //         {previewData && (
-
-  //           <BarcodeActions
-  //             onPrint={handlePrint}
-  //           />
-
-  //         )}
-
-  //       </div>
-
-  //     </div>
-  //     <div
-  //       className="
-  //   border-t
-  //   border-dashed
-  //   border-slate-300
-  //   my-8
-  // "
-  //     />
-
-  //     {/* Generated Barcode Table */}
-
-  //     <BarcodeTable
-  //       onDelete={handleDelete}
-  //       onPrint={handleTablePrint}
-  //     />
-
-  //   </div>
-
-  // );
   return (
 
     <div
@@ -679,6 +448,15 @@ function BarcodeGenerator() {
       <BarcodeTable
         onDelete={handleDelete}
         onPrint={handleTablePrint}
+        onEdit={handleEdit}
+      />
+
+
+      <EditBarcode
+        open={editOpen}
+        barcode={editingBarcode}
+        onClose={() => setEditOpen(false)}
+        onUpdated={handleUpdated}
       />
 
     </div>

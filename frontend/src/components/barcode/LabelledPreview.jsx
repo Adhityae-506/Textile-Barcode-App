@@ -1,7 +1,34 @@
-import { forwardRef } from "react";
+import { useState, useEffect, forwardRef } from "react";
+import api from "../../services/api"
 
 const LabelledPreview = forwardRef(
   ({ barcodeData }, ref) => {
+
+    
+    const [imageUrl, setImageUrl] = useState("");
+    
+    useEffect(() => {
+      const loadBarcode = async () => {
+        try {
+          const response = await api.get(
+            `barcode/${barcodeData.id}/preview/`,
+            {
+              responseType: "blob"
+            }
+          );
+
+          const url = URL.createObjectURL(response.data);
+          setImageUrl(url);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      if (barcodeData?.id) {
+        loadBarcode();
+      }
+    }, [barcodeData]);
+
 
     return (
 
@@ -86,7 +113,7 @@ const LabelledPreview = forwardRef(
             <div className="mt-6 flex justify-center">
 
               <img
-                src={`http://127.0.0.1:8000/api/barcode/${barcodeData.id}/preview/`}
+                src={imageUrl}
                 alt="barcode"
                 className="max-w-[320px]"
               />

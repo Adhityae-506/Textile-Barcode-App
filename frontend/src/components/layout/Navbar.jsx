@@ -1,16 +1,38 @@
-import { UserCircle } from "lucide-react";
+import { useState} from "react";
+import { UserCircle, ChevronDown, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/sakthi_textile_logo.png";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const location = useLocation();
 
+  const [showMenu, setShowMenu] = useState(false);
+  const navigate = useNavigate();
+
+
+  const username = "sakthi_textile"; // later get from API/localStorage
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Barcodes", path: "/barcode" },
     { name: "Stocks", path: "/stocks" },
     { name: "Dispatch", path: "/dispatch" },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await api.post("logout/",{
+      refresh: localStorage.getItem("refresh")
+    });
+    } catch (err) {
+      console.error(err);
+    }
+
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+
+    navigate("/login");
+  };
 
   return (
     <header className="h-20 bg-white border-b border-slate-200 px-12 flex items-center justify-between">
@@ -57,23 +79,80 @@ function Navbar() {
         </nav>
 
         {/* User Profile */}
-        <button
-          className="
-            w-12
-            h-12
-            rounded-full
-            border-2
-            border-blue-700
-            flex
-            items-center
-            justify-center
-          "
-        >
-          <UserCircle
-            size={28}
-            className="text-blue-700"
-          />
-        </button>
+        <div className="relative">
+
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="
+              flex
+              items-center
+              gap-2
+              px-3
+              py-2
+              rounded-xl
+              hover:bg-slate-100
+              transition
+            "
+          >
+            <UserCircle
+              size={32}
+              className="text-blue-700"
+            />
+
+            <ChevronDown
+              size={16}
+              className="text-slate-500"
+            />
+          </button>
+
+          {showMenu && (
+            <div
+              className="
+                absolute
+                right-0
+                top-14
+                w-56
+                bg-white
+                rounded-xl
+                shadow-lg
+                border
+                border-slate-200
+                z-50
+              "
+            >
+
+              <div className="px-4 py-3 border-b">
+                <p className="text-sm text-slate-500">
+                  Signed in as
+                </p>
+
+                <p className="font-semibold text-slate-800">
+                  {username}
+                </p>
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="
+                  w-full
+                  px-4
+                  py-3
+                  flex
+                  items-center
+                  gap-3
+                  text-red-600
+                  hover:bg-red-50
+                  rounded-b-xl
+                "
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+
+            </div>
+          )}
+
+        </div>
 
       </div>
 

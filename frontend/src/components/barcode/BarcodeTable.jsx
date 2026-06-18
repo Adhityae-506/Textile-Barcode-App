@@ -1,10 +1,11 @@
-import { Printer, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Printer, Trash2, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 
 const BarcodeTable = ({
   onPrint,
   onDelete,
+  onEdit,
 }) => {
   const [data, setData] = useState([]);
   const ITEMS_PER_PAGE = 5;
@@ -213,13 +214,21 @@ const BarcodeTable = ({
                     <div className="flex justify-center gap-4">
 
                       <button
-                        onClick={() =>
-                          onPrint(item)
-                        }
+                        onClick={() => onPrint(item)}
                       >
                         <Printer
                           size={18}
                           className="text-blue-700"
+                        />
+                      </button>
+                      
+                      <button
+                        onClick={() => onEdit(item)}
+                        title="Edit"
+                      >
+                        <Pencil
+                          size={18}
+                          className="text-green-600"
                         />
                       </button>
 

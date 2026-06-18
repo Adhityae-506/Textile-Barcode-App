@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import FabricViewSet, RollViewSet, DispatchViewSet, DashboardAPIView, login_view, logout_view, auth_check
+from .views import FabricViewSet, RollViewSet, DispatchViewSet, DashboardAPIView, logout_view, auth_check
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -39,7 +39,7 @@ urlpatterns = [
 
     path(
         "auth/check/",
-          auth_check
+        auth_check
     ),
 
     path(
