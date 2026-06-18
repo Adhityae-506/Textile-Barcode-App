@@ -1,7 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -18,8 +22,7 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
 
     let newErrors = {};
 
@@ -33,8 +36,43 @@ const Login = () => {
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      alert("Login Successful!");
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
+    try {
+      const res = await api.post(
+        "login/",
+        {
+          username: formData.username,
+          password: formData.password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(res.data);
+
+      localStorage.setItem(
+        "access",
+        res.data.access
+      );
+
+      localStorage.setItem(
+        "refresh",
+        res.data.refresh
+      );
+
+      navigate("/");
+
+    } catch (err) {
+      
+      alert(
+        err.response?.data?.detail ||
+        "Login Failed"
+      );
+
     }
   };
 
@@ -48,8 +86,7 @@ const Login = () => {
         background: "#f4f4f4",
       }}
     >
-      <form
-        onSubmit={handleSubmit}
+      <div
         style={{
           width: "320px",
           background: "#fff",
@@ -70,7 +107,6 @@ const Login = () => {
           Login
         </h1>
 
-        {/* Username */}
         <div
           style={{
             display: "flex",
@@ -104,7 +140,6 @@ const Login = () => {
           </p>
         )}
 
-        {/* Password */}
         <div
           style={{
             display: "flex",
@@ -117,7 +152,11 @@ const Login = () => {
           <FaLock color="#666" />
 
           <input
-            type={showPassword ? "text" : "password"}
+            type={
+              showPassword
+                ? "text"
+                : "password"
+            }
             name="password"
             placeholder="Password"
             value={formData.password}
@@ -132,12 +171,16 @@ const Login = () => {
           />
 
           <span
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={() =>
+              setShowPassword(!showPassword)
+            }
             style={{
               cursor: "pointer",
             }}
           >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
+            {showPassword
+              ? <FaEyeSlash />
+              : <FaEye />}
           </span>
         </div>
 
@@ -148,7 +191,7 @@ const Login = () => {
         )}
 
         <button
-          type="submit"
+          onClick={handleLogin}
           style={{
             alignSelf: "center",
             width: "100px",
@@ -159,12 +202,13 @@ const Login = () => {
             background: "#1d5fa8",
             color: "#fff",
             cursor: "pointer",
-            boxShadow: "0 4px 12px rgba(29,95,168,0.4)",
+            boxShadow:
+              "0 4px 12px rgba(29,95,168,0.4)",
           }}
         >
           Sign In
         </button>
-      </form>
+      </div>
     </div>
   );
 };

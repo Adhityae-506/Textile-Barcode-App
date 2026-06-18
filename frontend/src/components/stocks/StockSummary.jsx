@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Package, Shirt, ScanLine, Layers3 } from "lucide-react";
 import StockCard from "./StockCard";
-import axios from "axios";
+import api from "../../services/api";
 
 const StockSummary = () => {
 
@@ -9,8 +9,8 @@ const StockSummary = () => {
     const [stocks, setStocks] = useState([]);
 
     useEffect(() => {
-        axios
-            .get("http://127.0.0.1:8000/api/fabrics/stock_distribution/")
+        api
+            .get("fabrics/stock_distribution/")
             .then((res) => {
                 setStocks(res.data);
             });

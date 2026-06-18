@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import { useParams } from "react-router-dom";
 
 function DispatchDC() {
@@ -11,9 +11,9 @@ function DispatchDC() {
 
   useEffect(() => {
 
-    axios
+    api
       .get(
-        `http://127.0.0.1:8000/api/dispatch/${id}/dc/`
+        `dispatch/${id}/dc/`
       )
       .then((res) => {
 

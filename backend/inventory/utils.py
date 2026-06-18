@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.db.models import Max
 from .models import Dispatch
+from django.core.cache import cache
 
 def get_financial_year():
 
@@ -42,6 +43,8 @@ def create_dispatch(
     dispatch_no = (
         f"{fy}{next_seq:04d}"
     )
+    
+    cache.delete("recent_dispatch")
 
     return Dispatch.objects.create(
         customer_name=customer_name,
@@ -54,3 +57,13 @@ def create_dispatch(
         total_weight=total_weight,
         total_rolls=total_rolls,
     )
+
+
+def clear_stock_caches():
+
+    cache.delete("fabric_list")
+    cache.delete("stock_distribution")
+
+
+    
+   

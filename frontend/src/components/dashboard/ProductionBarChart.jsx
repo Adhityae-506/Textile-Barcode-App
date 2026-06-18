@@ -9,7 +9,7 @@ import {
   Legend,
   LabelList,
 } from "recharts";
-import axios from "axios";
+import api from "../../services/api";
 import { useState, useEffect } from "react";
 
 export default function ProductionBarChart() {
@@ -23,7 +23,7 @@ export default function ProductionBarChart() {
 
   useEffect(() => {
 
-    axios.get("http://127.0.0.1:8000/api/dashboard/")
+    api.get("dashboard/")
       .then((res) => {
         setData(res.data);
       })

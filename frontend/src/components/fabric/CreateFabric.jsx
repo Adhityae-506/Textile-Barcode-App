@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../services/api";
 import { useState } from "react";
 
 
@@ -9,7 +9,7 @@ const CreateFabric = () => {
 
     const handleCreate = async() =>{
         try{
-            const res = await axios.post("http://127.0.0.1:8000/api/fabrics/",{
+            const res = await api.post("fabrics/",{
                 type: fabric,
                 stock: stock,
             })
