@@ -219,6 +219,8 @@ class RollViewSet(ModelViewSet):
 
         # Clear related caches
         clear_stock_caches()
+
+        cache.delete("dashboard_chart")
         
         return Response(
                 {"message" : "Barcode created"},
@@ -236,7 +238,9 @@ class RollViewSet(ModelViewSet):
         fabric.save()
 
         roll.delete()
+
         clear_stock_caches()
+        cache.delete("dashboard_chart")
 
         return Response(
             {"message": "Roll deleted successfully"},
@@ -260,6 +264,7 @@ class RollViewSet(ModelViewSet):
         )
 
         clear_stock_caches()
+        cache.delete("dashboard_chart")
     
     @action(detail=True, methods=["get"])
     def preview(self, request, pk=None):
@@ -661,6 +666,8 @@ class DispatchViewSet(ModelViewSet):
 
             # Clear related caches
             clear_stock_caches()
+
+            cache.delete("dashboard_chart")
 
             return Response({
                 "id": dispatch.id,
