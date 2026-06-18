@@ -84,10 +84,11 @@ function DispatchPreview() {
       `Dispatch ${res.data.dispatch_no} created successfully`
     );
 
+    navigate(`/dispatch/${res.data.id}/`);
     localStorage.removeItem("dispatch");
     localStorage.removeItem("dispatch_rolls");
 
-    navigate("/");
+    
 
     } catch (err) {
 
@@ -388,19 +389,7 @@ function DispatchPreview() {
       })}
 
       <div className="flex justify-center gap-4 my-8">
-        <button
-          onClick={() => window.print()}
-          className="
-            bg-blue-600
-            text-white
-            px-6
-            py-2
-            rounded
-          "
-        >
-          Print
-        </button>
-
+        
         <button
             onClick={handleConfirmDispatch}
             disabled={loading}

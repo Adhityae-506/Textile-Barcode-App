@@ -236,11 +236,30 @@ class RollViewSet(ModelViewSet):
         fabric.save()
 
         roll.delete()
+        clear_stock_caches()
 
         return Response(
             {"message": "Roll deleted successfully"},
             status=status.HTTP_204_NO_CONTENT
         )
+    
+    def perform_update(self, serializer):
+
+        old_roll = self.get_object()
+
+        old_meters = old_roll.meters
+
+        updated_roll = serializer.save()
+
+        difference = updated_roll.meters - old_meters
+
+        Fabric.objects.filter(
+            id=updated_roll.fabric_type_id
+        ).update(
+            stock=F("stock") + difference
+        )
+
+        clear_stock_caches()
     
     @action(detail=True, methods=["get"])
     def preview(self, request, pk=None):
@@ -644,10 +663,10 @@ class DispatchViewSet(ModelViewSet):
             clear_stock_caches()
 
             return Response({
+                "id": dispatch.id,
                 "message":
                 "Dispatch completed",
-                "dispatch_no":
-                dispatch.dispatch_no
+                "dispatch_no": dispatch.dispatch_no
             })
 
 
