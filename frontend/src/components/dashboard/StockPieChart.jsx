@@ -5,7 +5,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 
 const COLORS = [
@@ -23,7 +23,7 @@ function StockPieChart() {
 
   useEffect(() => {
 
-    axios.get("http://127.0.0.1:8000/api/fabrics/stock_distribution/")
+    api.get("fabrics/stock_distribution/")
       .then((res) => {
         setData(res.data);
       });

@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
-import axios from "axios";
+import api from "../../services/api";
 
 import LabelledPreview from "./LabelledPreview";
 import BarcodeActions from "./BarcodeActions";
@@ -35,8 +35,8 @@ function BarcodeGenerator() {
 
       try {
 
-        const res = await axios.get(
-          "http://127.0.0.1:8000/api/fabrics/"
+        const res = await api.get(
+          "fabrics/"
         );
 
         setFabrics(res.data);
@@ -60,8 +60,8 @@ function BarcodeGenerator() {
 
     try {
 
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/barcode/",
+      const res = await api.post(
+        "barcode/",
         {
           fabric_type: selectedFabric.id,
           machine_no: machine,

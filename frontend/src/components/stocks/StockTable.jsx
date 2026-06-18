@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import {
   Search,
   ChevronLeft,
@@ -14,9 +14,9 @@ const StockTable = () => {
 
   useEffect(() => {
 
-    axios
+    api
       .get(
-        "http://127.0.0.1:8000/api/fabrics/"
+        "fabrics/"
       )
       .then((res) => {
 

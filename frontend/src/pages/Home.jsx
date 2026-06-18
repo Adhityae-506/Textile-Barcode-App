@@ -1,7 +1,3 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios"
-
 import DashboardLayout from "./DashboardLayout";
 import StockPieChart from "../components/dashboard/StockPieChart";
 import ProductionBarChart from "../components/dashboard/ProductionBarChart";

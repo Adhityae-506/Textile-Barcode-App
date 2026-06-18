@@ -1,6 +1,6 @@
 import { Printer, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 const BarcodeTable = ({
   onPrint,
@@ -65,7 +65,7 @@ const BarcodeTable = ({
 
     try {
 
-      await axios.delete(`http://127.0.0.1:8000/api/barcode/${id}/`);
+      await api.delete(`barcode/${id}/`);
 
       setData(prev =>
         prev.filter(item => item.id !== id)
@@ -85,8 +85,8 @@ const BarcodeTable = ({
 
       try {
 
-        const res = await axios.get(
-          "http://127.0.0.1:8000/api/barcode/list_barcode"
+        const res = await api.get(
+          "barcode/list_barcode"
         );
 
         setData(res.data);
