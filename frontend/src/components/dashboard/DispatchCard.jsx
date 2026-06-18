@@ -1,89 +1,172 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-function DispatchCard() {
-  const dispatches = [
-    {
-      date: "21/06/2026",
-      type: "50+50",
-      meters: "1500",
-      company: "XYZ",
-      dcNumber: "012354685",
-    },
-    {
-      date: "22/06/2026",
-      type: "60+40",
-      meters: "2000",
-      company: "ABC",
-      dcNumber: "012354686",
-    },
-  ];
 
+const DispatchCard = () => {
+
+  const [dispatches, setDispatches] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/api/dispatch/recent_dispatch/")
+      .then((res) => {
+        setDispatches(res.data);
+      });
+  }, []);
+
   const current = dispatches[currentIndex];
+  const icon = [
+      {
+        emoji: "🧵",
+        bg: "bg-blue-50",
+        border: "border-blue-200",
+      },
+      {
+        emoji: "✨",
+        bg: "bg-green-50",
+        border: "border-green-200",
+      },
+      {
+        emoji: "🌾",
+        bg: "bg-yellow-50",
+        border: "border-yellow-200",
+      },
+      {
+        emoji: "👑",
+        bg: "bg-pink-50",
+        border: "border-pink-200",
+      },
+      {
+        emoji: "👖",
+        bg: "bg-indigo-50",
+        border: "border-indigo-200",
+      },
+    ];
 
-  const nextDispatch = () => {
-    setCurrentIndex((prev) =>
-      prev === dispatches.length - 1 ? 0 : prev + 1
-    );
-  };
 
-  const prevDispatch = () => {
-    setCurrentIndex((prev) =>
-      prev === 0 ? dispatches.length - 1 : prev - 1
-    );
-  };
 
-  return (
-    <div className="flex-1 bg-white rounded-3xl p-5 md:p-6 shadow-md">
-      <h2 className="text-2xl font-bold text-blue-700 mb-6">
-        Recent Dispatch
-      </h2>
+    return (
 
-      <div className="flex flex-col lg:flex-row justify-between items-center gap-8">
-        <div className="space-y-4">
-          <p><strong>Date:</strong> {current.date}</p>
-          <p><strong>Type:</strong> {current.type}</p>
-          <p><strong>Meters:</strong> {current.meters}</p>
-          <p><strong>Company:</strong> {current.company}</p>
-          <p><strong>DC Number:</strong> {current.dcNumber}</p>
+      <>
+        <div className="flex justify-between items-center mb-5">
 
-          <button className="px-5 py-2 bg-blue-700 text-white rounded-full">
-            View Details
-          </button>
+          <h2 className="text-2xl font-bold text-blue-700">
+            Recent Dispatch
+          </h2>
+
+          <span className="text-sm text-slate-500">
+            Auto Updated
+          </span>
+
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={prevDispatch}
-            className="w-10 h-10 rounded-full bg-blue-700 text-white"
-          >
-            ◀
-          </button>
+        <div className="relative overflow-hidden h-[280px]">
 
-          <button
-            onClick={nextDispatch}
-            className="w-10 h-10 rounded-full bg-blue-700 text-white"
-          >
-            ▶
-          </button>
+          <div className="flex items-center">
+
+            {/* Details */}
+
+            <div className="flex-1 flex-col space-y-4">
+
+              <div className="flex justify-between">
+                <span className="font-medium text-slate-500">
+                  Date
+                </span>
+
+                <span className="font-semibold">
+                  {new Date(
+                        current?.dispatched_at
+                      ).toLocaleDateString("en-GB")}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-medium text-slate-500">
+                  Company
+                </span>
+
+                <span className="font-semibold">
+                  {current?.customer_name}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-medium text-slate-500">
+                  Fabric
+                </span>
+
+                <span className="font-semibold">
+                  {current?.fabric_name}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-medium text-slate-500">
+                  Meters
+                </span>
+
+                <span className="font-semibold text-green-600">
+                  {current?.total_meters}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-medium text-slate-500">
+                  DC Number
+                </span>
+
+                <span className="font-semibold">
+                  {current?.dispatch_no}
+                </span>
+              </div>
+
+            </div>
+            
+            {/* Fabric Icon */}
+
+            <div className="ml-10 p-10 flex flex-col items-center bg-amber-100 rounded-xl ">
+
+              <div className="text-8xl">
+                {icon[currentIndex].emoji}
+              </div>
+
+              <div className="mt-3 text-center">
+
+                <p className="font-bold text-lg">
+                  {current?.fabric_name}
+                </p>
+
+                <p className="text-sm text-slate-500">
+                  Fabric Type
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
-      </div>
 
-      <div className="flex justify-center gap-3 mt-5">
-        {dispatches.map((_, index) => (
-          <div
-            key={index}
-            className={`w-3 h-3 rounded-full ${
-              currentIndex === index
-                ? "bg-black"
-                : "bg-slate-300"
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
+        {/* Dots */}
+
+        <div className="flex justify-center gap-2 mt-4">
+
+          {dispatches.map((_, index) => (
+            <div
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`transition-all duration-300 rounded-full ${
+                currentIndex === index
+                  ? "w-8 h-3 bg-blue-700"
+                  : "w-3 h-3 bg-slate-300"
+              }`}
+            />
+          ))}
+
+        </div>
+    </>
+    )
 }
-
 export default DispatchCard;

@@ -10,8 +10,8 @@ const StockCard = ({
                     {" "} (Meters)
                 </span>
             </p>
-            <div className="flex items-center gap-5 mt-8">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center">
+            <div className="flex gap-5 mt-5">
+                <div className="w-24 h-24 rounded-full flex justify-center">
                     {icon}
                 </div>
 

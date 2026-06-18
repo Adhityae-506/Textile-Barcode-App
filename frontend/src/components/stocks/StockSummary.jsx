@@ -1,53 +1,56 @@
+import { useState, useEffect } from "react";
 import { Package, Shirt, ScanLine, Layers3 } from "lucide-react";
 import StockCard from "./StockCard";
+import axios from "axios";
 
 const StockSummary = () => {
 
+
+    const [stocks, setStocks] = useState([]);
+
+    useEffect(() => {
+        axios
+            .get("http://127.0.0.1:8000/api/fabrics/stock_distribution/")
+            .then((res) => {
+                setStocks(res.data);
+            });
+    }, []);
+
+    const totalStock = stocks.reduce(
+        (sum, item) => sum + (item.value || 0),
+        0
+    );
+
+    const NumberBadge = ({ index }) => (
+        <div className="w-16 h-16 flex items-center text-3xl justify-center rounded-full bg-blue-800 text-white font-bold">
+            {index + 1}
+        </div>
+    );
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+            {/*Total card */}
             <StockCard 
                 title="Total Stock" 
-                value="8450" 
+                value={totalStock}
                 icon={
                     <Package 
                         size={30}
-                        className="text-blue-900"
+                        className="w-16 h-16 text-blue-900"
                     />
                 }
             />
 
-            <StockCard 
-                title="cotton"
-                value="4250"
-                icon={
-                    <Shirt
-                        size={30}
-                        className="text-blue-900"
-                    />
-                }
-            />
-
-            <StockCard 
-                title="Polyester"
-                value="2150"
-                icon={
-                    <ScanLine
-                        size={30}
-                        className="text-blue-900"
-                    />
-                }
-            />
-
-            <StockCard 
-                title="Silk"
-                value="1250"
-                icon={
-                    <Layers3
-                        size={30}
-                        className="text-blue-900"
-                    />
-                }
-            />
+            {/*Top three fabrics */}
+            {stocks.slice(0, 3).map((item, index) => (
+                <StockCard
+                    key={item.name}
+                    title={item.name}
+                    value={item.value}
+                    icon={<NumberBadge index={index} />}
+                />
+            ))}
         </div>
     );
 }

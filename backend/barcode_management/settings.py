@@ -44,6 +44,15 @@ INSTALLED_APPS = [
     'reports',
 ]
 
+CACHES = {
+    "default": {
+        "BACKEND":
+        "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION":
+        "fabric-cache",
+    }
+}
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',

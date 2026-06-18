@@ -7,7 +7,7 @@ const BarcodeTable = ({
   onDelete,
 }) => {
   const [data, setData] = useState([]);
-  const ITEMS_PER_PAGE = 3;
+  const ITEMS_PER_PAGE = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
