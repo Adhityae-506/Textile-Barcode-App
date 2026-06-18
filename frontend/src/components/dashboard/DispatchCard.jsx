@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 
 const DispatchCard = () => {
@@ -8,8 +8,8 @@ const DispatchCard = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/dispatch/recent_dispatch/")
+    api
+      .get("dispatch/recent_dispatch/")
       .then((res) => {
         setDispatches(res.data);
       });

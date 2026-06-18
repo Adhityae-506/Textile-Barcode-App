@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { Navigate, useNavigate } from "react-router-dom";
 
 const DispatchRolls = () => {
@@ -59,8 +59,8 @@ const DispatchRolls = () => {
 
     try {
 
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/dispatch/add_roll/",
+      const res = await api.post(
+        "dispatch/add_roll/",
         {
           barcode,
           fabric_type:
@@ -115,8 +115,8 @@ const DispatchRolls = () => {
 
     try {
 
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/dispatch/finalize/",
+      const res = await api.post(
+        "dispatch/finalize/",
         {
           customer_name:
             dispatchInfo.customer_name,

@@ -1,10 +1,11 @@
-import { Printer, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Printer, Trash2, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 const BarcodeTable = ({
   onPrint,
   onDelete,
+  onEdit,
 }) => {
   const [data, setData] = useState([]);
   const ITEMS_PER_PAGE = 5;
@@ -65,7 +66,7 @@ const BarcodeTable = ({
 
     try {
 
-      await axios.delete(`http://127.0.0.1:8000/api/barcode/${id}/`);
+      await api.delete(`barcode/${id}/`);
 
       setData(prev =>
         prev.filter(item => item.id !== id)
@@ -85,8 +86,8 @@ const BarcodeTable = ({
 
       try {
 
-        const res = await axios.get(
-          "http://127.0.0.1:8000/api/barcode/list_barcode"
+        const res = await api.get(
+          "barcode/list_barcode"
         );
 
         setData(res.data);
@@ -213,13 +214,21 @@ const BarcodeTable = ({
                     <div className="flex justify-center gap-4">
 
                       <button
-                        onClick={() =>
-                          onPrint(item)
-                        }
+                        onClick={() => onPrint(item)}
                       >
                         <Printer
                           size={18}
                           className="text-blue-700"
+                        />
+                      </button>
+                      
+                      <button
+                        onClick={() => onEdit(item)}
+                        title="Edit"
+                      >
+                        <Pencil
+                          size={18}
+                          className="text-green-600"
                         />
                       </button>
 

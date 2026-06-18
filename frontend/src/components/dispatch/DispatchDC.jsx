@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 import { useParams } from "react-router-dom";
 
 function DispatchDC() {
 
   const { id } = useParams();
-
+  const navigate = useNavigate();
   const [dispatch, setDispatch] =
     useState(null);
 
   useEffect(() => {
 
-    axios
+    api
       .get(
-        `http://127.0.0.1:8000/api/dispatch/${id}/dc/`
+        `dispatch/${id}/dc/`
       )
       .then((res) => {
 
@@ -406,7 +407,7 @@ function DispatchDC() {
         }
       )}
 
-      <div className="flex justify-center my-8">
+      <div className="flex justify-center gap-4 my-8">
 
         <button
           onClick={() =>
@@ -421,6 +422,19 @@ function DispatchDC() {
           "
         >
           Print
+        </button>
+
+        <button
+          onClick={() => navigate("/")}
+          className="
+            bg-green-600
+            text-white
+            px-6
+            py-2
+            rounded
+          "
+        >
+          Go Home
         </button>
 
       </div>

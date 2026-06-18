@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
-import axios from "axios";
+import api from "../services/api";
 import DashboardLayout from "./DashboardLayout";
 import {
   Truck,
@@ -51,7 +51,7 @@ function CreateDispatch() {
         
         const fetchFabrics = async () => {
             try {
-                const res = await axios.get("http://127.0.0.1:8000/api/fabrics/");
+                const res = await api.get("fabrics/");
                 console.log(res.data);
                 setFabrics(res.data);
             }

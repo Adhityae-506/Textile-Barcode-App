@@ -1,18 +1,20 @@
-from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.decorators import action
+from rest_framework.decorators import action,api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate, login
 from django.db import transaction
 from django.db.models import Max, Sum, Q, F
 
 from .models import Fabric,Barcode,Roll, Dispatch
 from .serializer import FabricSerializer, RollSerializer, DispatchSerializer, DispatchRollSerializer
 from django.db.models.functions import TruncMonth, Greatest
-from .utils import create_dispatch
+from .utils import create_dispatch,clear_stock_caches
 
 from barcode import Code128
 from barcode.writer import ImageWriter
@@ -20,30 +22,119 @@ from io import BytesIO
 from django.http import HttpResponse
 from datetime import timedelta
 
+from django.core.cache import cache
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def auth_check(request):
+
+    return Response({
+        "authenticated": True,
+        "username": request.user.username
+    })
+
+#Login
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def login_view(request):
+
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    user = authenticate(
+        username=username,
+        password=password
+    )
+
+    if user:
+
+        login(request, user)
+
+        return Response({
+            "message": "Login Success"
+        })
+
+    return Response(
+        {"error": "Invalid credentials"},
+        status=401
+    )
+
+#Logout
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def logout_view(request):
+
+    refresh_token = request.data["refresh"]
+    token = RefreshToken(refresh_token)
+    token.blacklist()
+
+    return Response({
+        "message": "Logged out"
+    })
+
 class DispatchPagination(PageNumberPagination): # Serve-side pagination done in Dispatch list section
     page_size = 7
 
 class FabricViewSet(ModelViewSet):
+
     queryset = Fabric.objects.all()
     serializer_class = FabricSerializer
+    permission_classes = [IsAuthenticated]
 
-    def perform_create(self,serializer):
-        fabric = serializer.save()
-        fabric.save()
-        return Response(
-            {"message" : "New Fabric created"},
-            status = status.HTTP_200_OK
+    def list(self, request, *args, **kwargs):
+
+        cached_data = cache.get("fabric_list")
+
+        if cached_data:
+            print("CACHE HIT")
+            return Response(cached_data)
+
+        print("CACHE MISS")
+
+        queryset = self.get_queryset()
+
+        serializer = self.get_serializer(
+            queryset,
+            many=True
         )
+
+        cache.set(
+            "fabric_list",
+            serializer.data,
+            timeout=3600
+        )
+
+        return Response(serializer.data)
+
+    def perform_create(self, serializer):
+
+        fabric = serializer.save()
+        
+        #cache delete (when fabric created it affects the stock distribution)
+        clear_stock_caches()
+        
     
     @action( detail=False, methods=["get"] )
     def stock_distribution(self, request):
 
-        fabrics = Fabric.objects.order_by("-stock")
+        #cache for stock distribution 
+        cache_key = "stock_distribution"
+        cached_data = cache.get(cache_key)
+        
+        if cached_data is not None:
+            print(" CACHE HIT : stock_distribution")
+            return Response(cached_data)
+        print("CACHE MISS : stock_distribution")
 
+
+        fabrics = Fabric.objects.order_by("-stock")
+        
+       
         top_five = fabrics[:5]
         remaining = fabrics[5:]
 
         chart_data = []
+        
 
         for fabric in top_five:
 
@@ -64,6 +155,13 @@ class FabricViewSet(ModelViewSet):
                 "value": others_stock
             })
 
+        # Store in cache for 5 minutes
+        cache.set(
+            cache_key,
+            chart_data,
+            timeout=300
+        )
+
         return Response(chart_data)
     
 
@@ -72,6 +170,7 @@ class FabricViewSet(ModelViewSet):
 class RollViewSet(ModelViewSet):
     queryset = Roll.objects.all()
     serializer_class = RollSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self,serializer):
 
@@ -117,6 +216,9 @@ class RollViewSet(ModelViewSet):
         ).update(
                 stock=F('stock') + roll_obj.meters
         )
+
+        # Clear related caches
+        clear_stock_caches()
         
         return Response(
                 {"message" : "Barcode created"},
@@ -134,11 +236,30 @@ class RollViewSet(ModelViewSet):
         fabric.save()
 
         roll.delete()
+        clear_stock_caches()
 
         return Response(
             {"message": "Roll deleted successfully"},
             status=status.HTTP_204_NO_CONTENT
         )
+    
+    def perform_update(self, serializer):
+
+        old_roll = self.get_object()
+
+        old_meters = old_roll.meters
+
+        updated_roll = serializer.save()
+
+        difference = updated_roll.meters - old_meters
+
+        Fabric.objects.filter(
+            id=updated_roll.fabric_type_id
+        ).update(
+            stock=F("stock") + difference
+        )
+
+        clear_stock_caches()
     
     @action(detail=True, methods=["get"])
     def preview(self, request, pk=None):
@@ -187,7 +308,7 @@ class DispatchViewSet(ModelViewSet):
     queryset = Dispatch.objects.all()
     serializer_class = DispatchSerializer
     pagination_class = DispatchPagination
-
+    permission_classes = [IsAuthenticated]
 
     @action(
         detail=False,
@@ -195,11 +316,28 @@ class DispatchViewSet(ModelViewSet):
     )
     def recent_dispatch(self,request):
 
+        cache_key = "recent_dispatch"
+
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            print("CACHE HIT - recent_dispatch")
+            return Response(cached_data)      
+        
+        print("CACHE MISS - recent_dispatch")  
+        
         queryset = Dispatch.objects.order_by(
             "-dispatched_at"
         )[:5]
         
         serializer = self.get_serializer(queryset, many=True)
+            
+        cache.set(
+            cache_key,
+            serializer.data,
+            timeout=300
+        )
+        
         return Response(serializer.data)
 
     # Used to obtained filtered data using their month for dispatch list section
@@ -511,6 +649,8 @@ class DispatchViewSet(ModelViewSet):
                 ).update(
                     stock=Greatest( F("stock") - roll.meters, 0 )
                 )
+
+               
                 
                 roll.dispatch_status = "dispatched"
                 roll.dispatched = dispatch
@@ -519,11 +659,14 @@ class DispatchViewSet(ModelViewSet):
 
                 barcode.delete()
 
+            # Clear related caches
+            clear_stock_caches()
+
             return Response({
+                "id": dispatch.id,
                 "message":
                 "Dispatch completed",
-                "dispatch_no":
-                dispatch.dispatch_no
+                "dispatch_no": dispatch.dispatch_no
             })
 
 
@@ -575,10 +718,29 @@ class DispatchViewSet(ModelViewSet):
 
         })  
 
-
 class DashboardAPIView(APIView):
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
+
+        cached_data = cache.get(
+            "dashboard_chart"
+        )
+
+        if cached_data:
+
+            print(
+                "DASHBOARD CACHE HIT"
+            )
+
+            return Response(
+                cached_data
+            )
+
+        print(
+            "DASHBOARD CACHE MISS"
+        )
 
         # Bar Chart Data
         one_months_ago = (
@@ -618,10 +780,18 @@ class DashboardAPIView(APIView):
 
         for fabric in top_fabrics:
 
-            dispatched = fabric.dispatched or 0
-            remaining = fabric.remaining or 0
+            dispatched = (
+                fabric.dispatched or 0
+            )
 
-            if dispatched == 0 and remaining == 0:
+            remaining = (
+                fabric.remaining or 0
+            )
+
+            if (
+                dispatched == 0 and
+                remaining == 0
+            ):
                 continue
 
             production_chart.append({
@@ -634,4 +804,12 @@ class DashboardAPIView(APIView):
 
             })
 
-        return Response(production_chart)
+        cache.set(
+            "dashboard_chart",
+            production_chart,
+            timeout=300
+        )
+
+        return Response(
+            production_chart
+        )

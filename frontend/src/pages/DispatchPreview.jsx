@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 function DispatchPreview() {
@@ -19,9 +19,9 @@ function DispatchPreview() {
       localStorage.getItem("dispatch_rolls")
     ) || [];
 
-    axios
+    api
       .post(
-        "http://127.0.0.1:8000/api/dispatch/preview/",
+        "dispatch/preview/",
         {
           customer_name:
             dispatchData.customer_name,
@@ -59,8 +59,8 @@ function DispatchPreview() {
       localStorage.getItem("dispatch_rolls")
     ) || [];
 
-    const res = await axios.post(
-      "http://127.0.0.1:8000/api/dispatch/confirm_dispatch/",
+    const res = await api.post(
+      "dispatch/confirm_dispatch/",
       {
         customer_name:
           dispatchData.customer_name,
@@ -84,10 +84,11 @@ function DispatchPreview() {
       `Dispatch ${res.data.dispatch_no} created successfully`
     );
 
+    navigate(`/dispatch/${res.data.id}/`);
     localStorage.removeItem("dispatch");
     localStorage.removeItem("dispatch_rolls");
 
-    navigate("/");
+    
 
     } catch (err) {
 
@@ -388,19 +389,7 @@ function DispatchPreview() {
       })}
 
       <div className="flex justify-center gap-4 my-8">
-        <button
-          onClick={() => window.print()}
-          className="
-            bg-blue-600
-            text-white
-            px-6
-            py-2
-            rounded
-          "
-        >
-          Print
-        </button>
-
+        
         <button
             onClick={handleConfirmDispatch}
             disabled={loading}

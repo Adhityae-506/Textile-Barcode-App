@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import DashboardLayout from "./DashboardLayout";
-import axios from "axios";
+import api from "../services/api";
 
 function Dispatch() {
   const navigate = useNavigate();
@@ -20,9 +20,9 @@ function Dispatch() {
   {/*USed to obtain the available financial months for filtering in the Dispatch list */}
   useEffect(() => {
 
-    axios
+    api
       .get(
-        "http://127.0.0.1:8000/api/dispatch/available_months/"
+        "dispatch/available_months/"
       )
       .then((res) => {
 
@@ -48,8 +48,8 @@ function Dispatch() {
 
       try {
 
-        const res = await axios.get(
-          `http://127.0.0.1:8000/api/dispatch/by_month/?month=${month}&year=${year}&page=${currentPage}`
+        const res = await api.get(
+          `dispatch/by_month/?month=${month}&year=${year}&page=${currentPage}`
         );
 
         setDispatches(
