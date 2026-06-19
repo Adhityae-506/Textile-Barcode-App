@@ -21,6 +21,21 @@ export default function ProductionBarChart() {
       item.remaining > 0
   );
 
+  {/*Mobile screen will show ony 5 fabrics */}
+  const isMobile = window.innerWidth < 768;
+  const chartData = isMobile
+    ? data.slice(0, 5)
+    : data;
+  const truncateFabric = (name) => {
+    if (window.innerWidth < 768) {
+      return name.length > 12
+        ? `${name.substring(0, 12)}...`
+        : name;
+    }
+    return name;
+  };
+
+  
   useEffect(() => {
 
     api.get("dashboard/")
@@ -65,12 +80,12 @@ export default function ProductionBarChart() {
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} 
+      <BarChart data={chartData} 
         margin={{
           top: 20,
-          right: 80,
-          left: 20,
-          bottom: 20,
+          right: 20,
+          left: 10,
+          bottom: 40,
         }}
         barCategoryGap="30%"
       >
@@ -80,7 +95,17 @@ export default function ProductionBarChart() {
           vertical={false}
         />
 
-        <XAxis dataKey="fabric" />
+        <XAxis 
+          dataKey="fabric"
+          interval={0}
+          height={isMobile ? 70 : 50}
+          angle={isMobile ? -35 : 0}
+          textAnchor={isMobile ? "end" : "middle"}
+          tick={{
+            fontSize: isMobile ? 9 : 16
+          }}
+          tickFormatter={truncateFabric}
+         />
 
         <YAxis  tickFormatter={(value) =>
           `${value.toLocaleString()}`

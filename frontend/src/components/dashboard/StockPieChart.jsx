@@ -95,10 +95,20 @@ function StockPieChart() {
 
 
   return (
-    <div className="flex items-center justify-between w-full h-full px-4">
+    <div 
+      className="
+        flex 
+        flex-col 
+        lg:flex-row
+        items-center  
+        gap-6
+        w-full h-full 
+        px-2 md:px-4
+      "
+    >
 
       {/* Pie Chart */}
-      <div className="w-[55%] h-[260px]">
+      <div className="w-full lg:w-[55%] h-[220px] md:h-[260px]">
         <ResponsiveContainer>
           <PieChart>
             <Pie
@@ -120,7 +130,7 @@ function StockPieChart() {
       </div>
 
       {/* Legend */}
-      <div className="w-[45%] space-y-5">
+      <div className="w-full lg:w-[45%] space-y-3 md:space-y-5">
         {data.map((item, index) => (
           <div
             key={item.name}

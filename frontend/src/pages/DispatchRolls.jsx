@@ -186,7 +186,7 @@ const DispatchRolls = () => {
               <div className="w-10 h-10 rounded-full bg-slate-100  flex items-center justify-center font-bold">
                 1
               </div>
-              <span className="mt-3 text-sm font-semibold">
+              <span className="mt-3 text-sm text-slate-500">
                 Dispatch Info
               </span>
             </div>
@@ -198,7 +198,7 @@ const DispatchRolls = () => {
               <div className="w-14 h-14 rounded-full  bg-blue-800 text-lg text-white text-slate-700 flex items-center justify-center font-bold">
                 2
               </div>
-              <span className="mt-3 text-sm text-slate-500">
+              <span className="mt-3 text-sm  font-semibold">
                 Dispatch Scan
               </span>
             </div>

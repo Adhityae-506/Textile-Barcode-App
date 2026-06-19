@@ -103,13 +103,13 @@ const DispatchCard = () => {
 
         </div>
 
-        <div className="relative overflow-hidden h-[280px]">
+        <div className="relative overflow-hidden min-h-[280px]">
 
-          <div className="flex items-center">
+          <div className="flex flex-col lg:flex-row items-center gap-6">
 
             {/* Details */}
 
-            <div className="flex-1 flex-col space-y-4">
+            <div className="w-full flex-1 space-y-4">
 
               <div className="flex justify-between">
                 <span className="font-medium text-slate-500">
@@ -167,9 +167,9 @@ const DispatchCard = () => {
             
             {/* Fabric Icon */}
 
-            <div className="ml-10 p-10 flex flex-col items-center bg-amber-100 rounded-xl ">
+            <div className="w-full lg:w-auto p-6 md:p-10 flex flex-col items-center bg-amber-100 rounded-xl ">
 
-              <div className="text-8xl">
+              <div className=" text-5xl md:text-8xl">
                 {icon[currentIndex % icon.length].emoji}
               </div>
 
