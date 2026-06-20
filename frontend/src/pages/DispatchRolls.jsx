@@ -75,6 +75,7 @@ const DispatchRolls = () => {
       );
 
       if (exists) {
+        setBarcode("");
         alert("Already scanned");
         return;
       }
