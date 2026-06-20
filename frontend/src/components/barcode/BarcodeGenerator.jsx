@@ -34,6 +34,40 @@ function BarcodeGenerator() {
 
   const printRef = useRef();
 
+  const handleLabelPrint = async () => {
+
+  if (!previewData) return;
+
+  try {
+
+    await fetch(
+      "http://localhost:5000/print",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          roll_no: previewData.roll_no,
+          fabric_name: previewData.fabric_name,
+          meters: previewData.meters,
+          weight: previewData.weight,
+          barcode: previewData.barcode,
+        }),
+      }
+    );
+
+    alert("Printed Successfully");
+
+  } catch (err) {
+
+    console.error(err);
+  alert(err.message);
+
+  }
+
+};
+
   useEffect(() => {
 
     const fetchFabrics = async () => {
@@ -108,12 +142,6 @@ function BarcodeGenerator() {
   ) => {
 
     setPreviewData(barcode);
-
-    setTimeout(() => {
-
-      handlePrint();
-
-    }, 200);
 
   };
 
@@ -424,6 +452,7 @@ function BarcodeGenerator() {
 
             <BarcodeActions
               onPrint={handlePrint}
+              onLabelPrint={handleLabelPrint}
             />
 
           </div>

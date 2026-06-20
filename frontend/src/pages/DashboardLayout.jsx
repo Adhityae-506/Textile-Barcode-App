@@ -4,7 +4,7 @@ function DashboardLayout({ children }) {
 
   return (
 
-    <div className="relative bg-slate-100">
+    <div className="min-h-screen bg-slate-100">
       {/* Left Blue Strip */}
 
       <div
@@ -13,7 +13,8 @@ function DashboardLayout({ children }) {
           left-0
           top-0
           bottom-0
-          w-13
+          w-3
+          md:w-12
           bg-[#003A8C]
           z-10
         "
@@ -21,11 +22,11 @@ function DashboardLayout({ children }) {
 
       {/* Content Area */}
 
-      <div className="pl-10">
+      <div className="pl-3 md:pl-10">
 
         <Navbar />
 
-        <main className="p-8">
+        <main className="p-3 md:p-8">
           {children}
         </main>
 
