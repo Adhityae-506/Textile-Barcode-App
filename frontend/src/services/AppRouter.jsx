@@ -10,7 +10,7 @@ import CreateDispatch from "../pages/CreateDispatch";
 import DispatchRolls from "../pages/DispatchRolls";
 import Stocks from "../pages/Stocks";
 import DispatchPreview from "../pages/DispatchPreview";
-
+import FabricRolls from "../components/fabric/FabricRolls";
 import DispatchDC from "../components/dispatch/DispatchDC";
 
 function AppRouter() {
@@ -37,6 +37,7 @@ function AppRouter() {
           <Route path="/dispatch/scan" element={<DispatchRolls />} />
           <Route path="/dispatch/preview" element={<DispatchPreview />} />
           <Route path="/dispatch/:id" element={<DispatchDC />} />
+          <Route path="/fabric-rolls/:id" element={<FabricRolls />} />
         </Route>
 
       </Routes>
