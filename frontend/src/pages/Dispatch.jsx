@@ -3,68 +3,78 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "./DashboardLayout";
 import api from "../services/api";
 
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+
+import { Calendar } from "@/components/ui/calendar";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+
 function Dispatch() {
   const navigate = useNavigate();
 
   const [dispatches, setDispatches] = useState([]);
 
-  const [currentPage, setCurrentPage] =
-    useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const [totalPages, setTotalPages] =
-    useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const [months, setMonths] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState("");
+
+  {/**Default date when entering the Dispatch list*/}
+  const today = new Date();
+
+  const firstDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      1
+  );
+
+  const [date, setDate] = useState({
+      from: firstDay,
+      to: today,
+  });
+
 
   {/*USed to obtain the available financial months for filtering in the Dispatch list */}
   useEffect(() => {
 
-    api
-      .get(
-        "dispatch/available_months/"
-      )
-      .then((res) => {
-
-        setMonths(res.data)
-
-        if (res.data.length > 0) {
-
-          setSelectedMonth(
-            `${res.data[0].month}-${res.data[0].year}`
-          );
-        }
-
-      });
-
-  }, []);
-
-  const [month, year] = selectedMonth.split("-");
-
-  {/*Used to obtained filtered data using their month for dispatch list */}
-  useEffect(() => {
+    if (!date?.from || !date?.to)
+        return;
 
     const fetchDispatches = async () => {
 
       try {
 
+        const from = format(date.from, "yyyy-MM-dd");
+
+        const to = format(date.to, "yyyy-MM-dd");
+
         const res = await api.get(
-          `dispatch/by_month/?month=${month}&year=${year}&page=${currentPage}`
+
+          `dispatch/by_date/?from=${from}&to=${to}&page=${currentPage}`
+
         );
 
         setDispatches(
-          res.data.results
+            res.data.results
         );
 
         setTotalPages(
-          Math.ceil(
-            res.data.count / 10
-          )
+
+            Math.ceil(
+                res.data.count / 10
+            )
+
         );
 
-      } catch (err) {
+      }
 
-        console.error(err);
+      catch (err) {
+
+        console.log(err);
 
       }
 
@@ -72,7 +82,7 @@ function Dispatch() {
 
     fetchDispatches();
 
-  }, [selectedMonth,, currentPage]);
+  }, [date, currentPage]);
 
 
   return (
@@ -88,6 +98,81 @@ function Dispatch() {
               Dispatch List
             </h1>
 
+          </div>
+
+          {/* Date Filter */}
+          <div className="flex justify-between mb-8">
+
+            <Popover>
+
+              <PopoverTrigger asChild>
+
+                <button
+                  className="
+                    flex
+                    items-center
+                    gap-3
+                    border
+                    rounded-xl
+                    px-4
+                    py-3
+                    bg-white
+                  "
+                >
+
+                  <CalendarIcon size={18} />
+
+                  {
+                    date?.from ? date.to ? /*If there is from and to */
+                        <>
+                          {
+
+                            format( date.from, "dd MMM yyyy" )
+                          }
+
+                          {" - "}
+
+                          {
+
+                            format( date.to, "dd MMM yyyy" )
+                          }
+
+                        </>
+
+                          :   /*Else only single date */
+
+                          format( date.from, "dd MMM yyyy")
+                        :
+
+                        "Select Date"
+
+                  }
+
+                </button>
+
+              </PopoverTrigger>
+
+                <PopoverContent
+                    className="w-auto p-0"
+                    align="start"
+                >
+
+                  <Calendar
+
+                    mode="range"
+
+                    selected={date}
+
+                    onSelect={setDate}
+
+                    numberOfMonths={2}
+
+                  />
+
+                </PopoverContent>
+
+            </Popover>
+            
             <button
               onClick={() => navigate("/dispatch-list")}
               className="
@@ -103,28 +188,6 @@ function Dispatch() {
               + Create Dispatch
             </button>
 
-          </div>
-
-          {/* Month Filter */}
-          <div className="mb-6">
-
-            <select
-              value={selectedMonth}
-              onChange={(e) => {
-                setSelectedMonth(e.target.value);
-                setCurrentPage(1);
-              }}
-            >
-              {months.map((month) => (
-                <option
-                  key={`${month.month}-${month.year}`}
-                  value={`${month.month}-${month.year}`}
-                >
-                  {month.label}
-                </option>
-
-              ))}
-            </select>
 
           </div>
 
@@ -135,7 +198,8 @@ function Dispatch() {
 
               <thead>
 
-                <tr className="bg-slate-100">
+                <tr className="bg-blue-900
+                text-white ">
 
                   <th className="p-4 text-left font-semibold">
                     Dispatch No
@@ -143,6 +207,14 @@ function Dispatch() {
 
                   <th className="p-4 text-left font-semibold">
                     Customer Name
+                  </th>
+
+                  <th className="p-4 text-left font-semibold">
+                    Fabric
+                  </th>
+
+                  <th className="p-4 text-left font-semibold">
+                    Total Meters
                   </th>
 
                   <th className="p-4 text-left font-semibold">
@@ -180,6 +252,14 @@ function Dispatch() {
 
                     <td className="p-4">
                       {dispatch.customer_name}
+                    </td>
+
+                    <td className="p-4">
+                      {dispatch.fabric_name}
+                    </td>
+
+                    <td className="p-4">
+                      {dispatch.total_meters}
                     </td>
 
                     <td className="p-4">

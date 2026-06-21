@@ -122,20 +122,6 @@ const StockTable = () => {
           />
         </div>
 
-        <button
-          onClick = {() => navigate("/fabric")}
-          className="
-              bg-blue-700
-              text-white
-              px-6 py-3
-              rounded-xl
-              hover:bg-blue-800
-              transition
-          "
-        >
-          + Create Fabric
-        </button>
-
       </div>
 
       {/* Table */}
@@ -161,7 +147,11 @@ const StockTable = () => {
               </th>
 
               <th className="p-4 text-left">
-                Last Updated
+                No of Rolls
+              </th>
+
+              <th className="p-4 text-center">
+                View
               </th>
             </tr>
 
@@ -181,7 +171,7 @@ const StockTable = () => {
                     text-slate-500
                   "
                 >
-                  No barcodes generated yet
+                  No Fabric generated yet
                 </td>
 
               </tr>
@@ -200,8 +190,28 @@ const StockTable = () => {
                   {item.stock}
                 </td>
 
-                <td className="p-4">
-                  {item.updated}
+                <td className="px-10 p-4">
+                  {item.total_rolls}
+                </td>
+
+                <td className="p-4 text-center">
+
+                  <button
+                    onClick={() =>
+                      navigate(`/fabric-rolls/${item.id}`)
+                    }
+                    className="
+                      bg-blue-600
+                      text-white
+                      px-3
+                      py-1
+                      rounded
+                      hover:bg-blue-700
+                    "
+                  >
+                    View
+                  </button>
+
                 </td>
               </tr>
 

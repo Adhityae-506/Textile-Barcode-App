@@ -109,6 +109,11 @@ function BarcodeGenerator() {
         }
       );
 
+      setSearch("");
+      setSelectedFabric(null);
+      setMeters(0);
+      setWeight(0);
+      setMachine(0);
       setPreviewData(res.data);
 
     } catch (err) {
@@ -311,6 +316,7 @@ function BarcodeGenerator() {
 
           <input
             type="number"
+            value={meters || ""}
             placeholder="Mtrs"
             className="
             w-full
@@ -346,6 +352,7 @@ function BarcodeGenerator() {
 
           <input
             type="number"
+            value={weight || ""}
             placeholder="Weight"
             className="
             w-full
@@ -381,6 +388,7 @@ function BarcodeGenerator() {
 
           <input
             type="number"
+            value={machine || ""}
             placeholder="Machine No"
             className="
             w-full

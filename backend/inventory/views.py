@@ -8,8 +8,9 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
+from django.utils.dateparse import parse_date
 from django.db import transaction
-from django.db.models import Max, Sum, Q, F
+from django.db.models import Max, Sum, Q, F, Count
 
 from .models import Fabric,Barcode,Roll, Dispatch
 from .serializer import FabricSerializer, RollSerializer, DispatchSerializer, DispatchRollSerializer
@@ -91,7 +92,9 @@ class FabricViewSet(ModelViewSet):
 
         print("CACHE MISS")
 
-        queryset = self.get_queryset()
+        queryset = self.get_queryset().annotate(
+            total_rolls = Count("rolls")
+        )
 
         serializer = self.get_serializer(
             queryset,
@@ -164,6 +167,53 @@ class FabricViewSet(ModelViewSet):
 
         return Response(chart_data)
     
+
+    # For view in fabric table
+    @action(
+        detail=True,
+        methods=["get"]
+    )
+    def rolls(self, request, pk=None):
+
+        fabric = self.get_object()
+
+        rolls = Roll.objects.filter(
+            fabric_type=fabric,
+            dispatch_status="not_dispatched"
+        ).order_by("-id")
+
+        data = []
+
+        total_meters = 0
+        total_weight = 0
+
+        for roll in rolls:
+
+            total_meters += roll.meters
+            total_weight += roll.weight
+
+            data.append({
+                "roll_no": roll.roll_no,
+                "machine_no": roll.machine_no,
+                "meters": roll.meters,
+                "weight": roll.weight,
+                "gram": round(
+                    roll.weight / roll.meters,
+                    3
+                )
+                if roll.meters else 0,
+                "status": roll.dispatch_status
+            })
+
+        return Response({
+            "fabric_name": fabric.type,
+            "stock": fabric.stock,
+            "total_rolls": rolls.count(),
+            "total_meters": total_meters,
+            "total_weight": total_weight,
+            "rolls": data
+        })
+
 
 
         
@@ -350,18 +400,32 @@ class DispatchViewSet(ModelViewSet):
         detail=False,
         methods=["get"]
     )
-    def by_month(self, request):
+    def by_date(self, request):
 
-        month = request.GET.get("month")
+        from_date = request.GET.get("from")
+        to_date = request.GET.get("to")
+        single_date = request.GET.get("date")
+
         queryset = Dispatch.objects.all()
-        if month:
+
+        if single_date:
+
             queryset = queryset.filter(
-                dispatched_at__month=month
+                dispatched_at__date=parse_date(single_date)
             )
 
-        page = self.paginate_queryset(
-            queryset.order_by("-dispatched_at")
-        )
+        elif from_date and to_date:
+
+            queryset = queryset.filter(
+                dispatched_at__date__range=[
+                    parse_date(from_date),
+                    parse_date(to_date)
+                ]
+            )
+
+        queryset = queryset.order_by("-dispatched_at")
+
+        page = self.paginate_queryset(queryset)
 
         serializer = DispatchSerializer(
             page,
@@ -371,41 +435,6 @@ class DispatchViewSet(ModelViewSet):
         return self.get_paginated_response(
             serializer.data
         )
-
-    #USed to obtain the available financial months for filtering in the Dispatch list section (Data in the drop down box for month)
-    @action(
-        detail=False,
-        methods=["get"]
-    )
-    def available_months(self, request):
-
-        months = (
-            Dispatch.objects
-            .annotate(
-                month=TruncMonth("dispatched_at")
-            )
-            .values(
-                "month",
-                "financial_year"
-            )
-            .distinct()
-            .order_by("-month")
-        )   
-
-        data = []
-
-        for item in months:
-
-            data.append({
-                "month": item["month"].month,
-                "year": item["month"].year,
-                "financial_year": item["financial_year"],
-                "label": (
-                    f"{item['month'].strftime('%B %Y')} "
-                    f"(FY {item['financial_year']})"
-                )
-            })
-        return Response(data)
 
 
     @action( 

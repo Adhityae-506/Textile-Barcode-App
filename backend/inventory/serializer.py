@@ -3,6 +3,10 @@ from .models import Fabric, Roll, Dispatch
 
 class FabricSerializer(serializers.ModelSerializer):
     
+    total_rolls = serializers.IntegerField(
+        read_only=True
+    )
+    
     class Meta:
         model = Fabric
         fields = "__all__"
