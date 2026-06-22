@@ -194,7 +194,7 @@ function BarcodeGenerator() {
         className="
         grid
         grid-cols-1
-        lg:grid-cols-5
+        lg:grid-cols-[2fr_1fr_1fr_1fr_auto]
         gap-5
         items-end
       "
@@ -413,6 +413,7 @@ function BarcodeGenerator() {
           text-white
           rounded-xl
           py-3
+          px-6
           font-semibold
           hover:bg-blue-950
         "
