@@ -1,8 +1,12 @@
 import DashbordLayout from "../../src/pages/DashboardLayout";
 import StockSummary from "../components/stocks/StockSummary";
 import StockTable from "../components/stocks/StockTable";
+import { useNavigate } from "react-router-dom";
 
 const Stocks = () => {
+
+    const navigate = useNavigate();
+
     return (
         <DashbordLayout>
             <div className="space-y-8">
@@ -32,7 +36,7 @@ const Stocks = () => {
                     </h1>
 
                     <button
-                        onClick = {() => navigate("/fabrics")}
+                        onClick = {() => navigate("/fabric")}
                         className="
                             bg-blue-700
                             text-white
