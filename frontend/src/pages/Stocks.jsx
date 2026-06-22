@@ -32,7 +32,7 @@ const Stocks = () => {
                     </h1>
 
                     <button
-                        onClick = {() => navigate("/fabric")}
+                        onClick = {() => navigate("/fabrics")}
                         className="
                             bg-blue-700
                             text-white
