@@ -1,8 +1,12 @@
 import DashbordLayout from "../../src/pages/DashboardLayout";
 import StockSummary from "../components/stocks/StockSummary";
 import StockTable from "../components/stocks/StockTable";
+import { useNavigate } from "react-router-dom";
 
 const Stocks = () => {
+
+    const navigate = useNavigate();
+    
     return (
         <DashbordLayout>
             <div className="space-y-8">
