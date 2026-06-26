@@ -93,7 +93,10 @@ class FabricViewSet(ModelViewSet):
         print("CACHE MISS")
 
         queryset = self.get_queryset().annotate(
-            total_rolls = Count("rolls")
+            total_rolls = Count(
+                "rolls",
+                filter=Q(rolls__dispatch_status="not_dispatched")
+            )
         )
 
         serializer = self.get_serializer(
