@@ -172,9 +172,18 @@ function DispatchDC() {
 
               {/* Roll Tables */}
 
-              <div className="grid grid-cols-2 border-l border-r">
+              <div className="flex border-l border-r items-start">
 
-                <table className="w-full border-r">
+                <table className="w-1/2 border-r table-fixed">
+
+                  <colgroup>
+                    <col className="w-[8%]" />   {/* S.NO */}
+                    <col className="w-[34%]" />  {/* ROLL */}
+                    <col className="w-[12%]" />  {/* L.NO */}
+                    <col className="w-[12%]" />  {/* KG */}
+                    <col className="w-[16%]" />  {/* MTRS */}
+                    <col className="w-[18%]" />  {/* GRAM */}
+                  </colgroup>
 
                   <thead>
 
@@ -245,7 +254,16 @@ function DispatchDC() {
 
                 </table>
 
-                <table className="w-full">
+                <table className="w-1/2 table-fixed">
+
+                  <colgroup>
+                    <col className="w-[8%]" />   {/* S.NO */}
+                    <col className="w-[34%]" />  {/* ROLL */}
+                    <col className="w-[12%]" />  {/* L.NO */}
+                    <col className="w-[12%]" />  {/* KG */}
+                    <col className="w-[16%]" />  {/* MTRS */}
+                    <col className="w-[18%]" />  {/* GRAM */}
+                  </colgroup>
 
                   <thead>
 
