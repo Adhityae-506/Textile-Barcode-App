@@ -177,12 +177,12 @@ function DispatchDC() {
                 <table className="w-1/2 border-r table-fixed">
 
                   <colgroup>
-                    <col className="w-[8%]" />   {/* S.NO */}
-                    <col className="w-[34%]" />  {/* ROLL */}
+                    <col className="w-[12%]" />   {/* S.NO */}
+                    <col className="w-[36%]" />  {/* ROLL */}
                     <col className="w-[12%]" />  {/* L.NO */}
                     <col className="w-[12%]" />  {/* KG */}
-                    <col className="w-[16%]" />  {/* MTRS */}
-                    <col className="w-[18%]" />  {/* GRAM */}
+                    <col className="w-[14%]" />  {/* MTRS */}
+                    <col className="w-[14%]" />  {/* GRAM */}
                   </colgroup>
 
                   <thead>
@@ -218,7 +218,7 @@ function DispatchDC() {
                           "
                         >
 
-                          <td>
+                          <td className="border-r">
                             {pageIndex *
                               60 +
                               index +
@@ -257,12 +257,12 @@ function DispatchDC() {
                 <table className="w-1/2 table-fixed">
 
                   <colgroup>
-                    <col className="w-[8%]" />   {/* S.NO */}
-                    <col className="w-[34%]" />  {/* ROLL */}
+                    <col className="w-[12%]" />   {/* S.NO */}
+                    <col className="w-[36%]" />  {/* ROLL */}
                     <col className="w-[12%]" />  {/* L.NO */}
                     <col className="w-[12%]" />  {/* KG */}
-                    <col className="w-[16%]" />  {/* MTRS */}
-                    <col className="w-[18%]" />  {/* GRAM */}
+                    <col className="w-[14%]" />  {/* MTRS */}
+                    <col className="w-[14%]" />  {/* GRAM */}
                   </colgroup>
 
                   <thead>
@@ -298,7 +298,7 @@ function DispatchDC() {
                           "
                         >
 
-                          <td>
+                          <td className="border-r">
                             {pageIndex *
                               60 +
                               31 +
