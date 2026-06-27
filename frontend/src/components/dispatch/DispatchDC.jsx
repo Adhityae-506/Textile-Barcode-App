@@ -344,7 +344,7 @@ function DispatchDC() {
 
                   <div>
                     <b>Total Weight :</b>{" "}
-                    {totalWeight}
+                    {totalWeight.toFixed(3)}
                   </div>
 
                   <div>
